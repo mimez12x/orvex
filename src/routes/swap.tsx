@@ -266,6 +266,14 @@ function SwapPage() {
             </div>
             <div className="flex justify-between"><span>Slippage</span><span>{(slippageBps / 100).toFixed(2)}%</span></div>
             <div className="flex justify-between gap-2"><span className="shrink-0">Min received</span><span className="text-right truncate">{fmt(slippageMin(expectedOut, slippageBps), tokenOut.decimals)} {tokenOut.symbol}</span></div>
+            {priceImpact !== null && (
+              <div className="flex justify-between">
+                <span>Price impact</span>
+                <span className={priceImpact >= 5 ? "text-destructive font-semibold" : priceImpact >= 1 ? "text-amber-400" : "text-accent"}>
+                  {priceImpact < 0.01 ? "< 0.01" : priceImpact.toFixed(2)}%
+                </span>
+              </div>
+            )}
             <div className="flex justify-between gap-2">
               <span className="shrink-0">Route</span>
               <span className="text-right truncate text-accent">
@@ -275,6 +283,13 @@ function SwapPage() {
             </div>
           </div>
         )}
+
+        {priceImpact !== null && priceImpact >= 5 && (
+          <div className="mt-3 p-3 rounded-xl bg-destructive/10 border border-destructive/40 text-xs text-destructive">
+            ⚠ High price impact ({priceImpact.toFixed(2)}%). You will lose a significant amount to slippage. Consider a smaller trade.
+          </div>
+        )}
+
 
 
         <button
