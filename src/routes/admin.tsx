@@ -54,12 +54,12 @@ function AdminPage() {
       </div>
 
       <Card title="Set Cooldown (seconds)">
-        <SingleInput placeholder="3600" onSubmit={(v) => exec("Setting cooldown…", { functionName: "setCooldown", args: [BigInt(v)] })} disabled={isPending || !!hash} />
+        <SingleInput placeholder="3600" onSubmit={(v: string) => exec("Setting cooldown…", { functionName: "setCooldown", args: [BigInt(v)] })} disabled={isPending || !!hash} />
       </Card>
 
       <Card title="Set Claim Amount">
         <TokenAmountForm
-          onSubmit={(idx, amt) => exec("Setting claim amount…", { functionName: "setClaimAmount", args: [idx, parseUnits(amt as `${number}`, 18)] })}
+          onSubmit={(idx: number, amt: string) => exec("Setting claim amount…", { functionName: "setClaimAmount", args: [idx, parseUnits(amt as `${number}`, 18)] })}
           disabled={isPending || !!hash}
         />
       </Card>
@@ -67,28 +67,28 @@ function AdminPage() {
       <Card title="Set Max Claims (per user)">
         <TokenAmountForm
           amountLabel="max" placeholder="100"
-          onSubmit={(idx, amt) => exec("Setting max claims…", { functionName: "setMaxClaims", args: [idx, BigInt(amt)] })}
+          onSubmit={(idx: number, amt: string) => exec("Setting max claims…", { functionName: "setMaxClaims", args: [idx, BigInt(amt)] })}
           disabled={isPending || !!hash}
         />
       </Card>
 
       <Card title="Refill (transfers tokens INTO faucet — requires prior approval)">
         <TokenAmountForm
-          onSubmit={(idx, amt) => exec("Refilling…", { functionName: "refill", args: [idx, parseUnits(amt as `${number}`, 18)] })}
+          onSubmit={(idx: number, amt: string) => exec("Refilling…", { functionName: "refill", args: [idx, parseUnits(amt as `${number}`, 18)] })}
           disabled={isPending || !!hash}
         />
       </Card>
 
       <Card title="Set Token Address">
-        <SetTokenForm onSubmit={(idx, addr) => exec("Setting token…", { functionName: "setToken", args: [idx, addr as `0x${string}`] })} disabled={isPending || !!hash} />
+        <SetTokenForm onSubmit={(idx: number, addr: string) => exec("Setting token…", { functionName: "setToken", args: [idx, addr as `0x${string}`] })} disabled={isPending || !!hash} />
       </Card>
 
       <Card title="Admin Withdraw">
-        <AdminWithdrawForm onSubmit={(idx, amt, to) => exec("Withdrawing…", { functionName: "adminWithdraw", args: [idx, parseUnits(amt as `${number}`, 18), to as `0x${string}`] })} disabled={isPending || !!hash} />
+        <AdminWithdrawForm onSubmit={(idx: number, amt: string, to: string) => exec("Withdrawing…", { functionName: "adminWithdraw", args: [idx, parseUnits(amt as `${number}`, 18), to as `0x${string}`] })} disabled={isPending || !!hash} />
       </Card>
 
       <Card title="Reset User Claim Count">
-        <UserClaimForm onSubmit={(user, idx, count) => exec("Setting user count…", { functionName: "setUserClaimCount", args: [user as `0x${string}`, idx, BigInt(count)] })} disabled={isPending || !!hash} />
+        <UserClaimForm onSubmit={(user: string, idx: number, count: string) => exec("Setting user count…", { functionName: "setUserClaimCount", args: [user as `0x${string}`, idx, BigInt(count)] })} disabled={isPending || !!hash} />
       </Card>
     </div>
   );
