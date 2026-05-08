@@ -148,7 +148,15 @@ export function ConnectButton() {
   const { disconnect } = useDisconnect();
   const chainId = useChainId();
   const { switchChain } = useSwitchChain();
+  const detected = useEip6963Providers();
   const wrong = isConnected && chainId !== litvm.id;
+
+  // Best-effort: identify which detected provider is currently connected
+  const activeWallet = (() => {
+    if (typeof window === "undefined") return null;
+    const eth: any = (window as any).ethereum;
+    return detected.find((d) => d.provider === eth || d.provider?.selectedAddress?.toLowerCase?.() === address?.toLowerCase?.()) ?? detected[0] ?? null;
+  })();
 
   useEffect(() => {
     if (wrong) {
@@ -182,8 +190,16 @@ export function ConnectButton() {
       )}
       <button
         onClick={() => disconnect()}
-        className="px-3 py-2 rounded-xl glass text-sm font-mono hover:border-primary/60 transition"
+        className="flex items-center gap-2 px-3 py-2 rounded-xl glass text-sm font-mono hover:border-primary/60 transition"
       >
+        {activeWallet?.info.icon && (
+          <img
+            src={activeWallet.info.icon}
+            alt={activeWallet.info.name}
+            className="h-5 w-5 rounded"
+            onError={(e) => { (e.currentTarget as HTMLImageElement).style.display = "none"; }}
+          />
+        )}
         {address?.slice(0, 6)}…{address?.slice(-4)}
       </button>
     </div>
