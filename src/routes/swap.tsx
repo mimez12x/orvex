@@ -55,6 +55,35 @@ function SwapPage() {
     return route.amountOut;
   }, [mode, amountInWei, route.amountOut]);
 
+  // Price impact (direct path only). Returns percentage number (0–100).
+  const directPair = useGetPair(
+    mode === "swap" && route.hops === 1 ? tokenInAddr : undefined,
+    mode === "swap" && route.hops === 1 ? tokenOutAddr : undefined,
+  );
+  const pairAddr = directPair.data as `0x${string}` | undefined;
+  const reserves = usePairReserves(
+    pairAddr && pairAddr !== "0x0000000000000000000000000000000000000000" ? pairAddr : undefined,
+  );
+  const priceImpact = useMemo<number | null>(() => {
+    if (mode !== "swap" || route.hops !== 1 || amountInWei <= 0n || expectedOut <= 0n) return null;
+    const r = reserves.data;
+    const reserveTuple = r?.[0]?.result as readonly [bigint, bigint, number] | undefined;
+    const t0 = r?.[1]?.result as `0x${string}` | undefined;
+    if (!reserveTuple || !t0) return null;
+    const inputIsToken0 = t0.toLowerCase() === tokenInAddr.toLowerCase();
+    const reserveIn = inputIsToken0 ? reserveTuple[0] : reserveTuple[1];
+    const reserveOut = inputIsToken0 ? reserveTuple[1] : reserveTuple[0];
+    if (reserveIn === 0n || reserveOut === 0n) return null;
+    // mid price (out per in) vs execution price
+    const PREC = 10n ** 18n;
+    const mid = (reserveOut * PREC) / reserveIn;
+    const exec = (expectedOut * PREC) / amountInWei;
+    if (mid === 0n) return null;
+    const diff = mid > exec ? mid - exec : 0n;
+    return Number((diff * 10000n) / mid) / 100; // % with 2 decimals
+  }, [mode, route.hops, amountInWei, expectedOut, reserves.data, tokenInAddr]);
+
+
 
   // Allowance for ERC20 -> router
   const allowance = useAllowance(
