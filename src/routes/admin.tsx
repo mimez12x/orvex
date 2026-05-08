@@ -147,7 +147,7 @@ function SetTokenForm({ onSubmit, disabled }: { onSubmit: (idx: number, addr: st
   );
 }
 
-function AdminWithdrawForm({ onSubmit, disabled }: any) {
+function AdminWithdrawForm({ onSubmit, disabled }: { onSubmit: (idx: number, amt: string, to: string) => void; disabled?: boolean }) {
   const [idx, setIdx] = useState(FAUCET_TOKENS[0].faucetIndex!);
   const [amt, setAmt] = useState("");
   const [to, setTo] = useState("");
