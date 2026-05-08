@@ -23,6 +23,9 @@ function SwapPage() {
   const [tokenIn, setTokenIn] = useState<Token>(NATIVE);
   const [tokenOut, setTokenOut] = useState<Token>(WZKLTC);
   const [amountIn, setAmountIn] = useState("");
+  const [slippageBps, setSlippageBps] = useState(50); // 0.50% default
+  const [deadlineMin, setDeadlineMin] = useState(20);
+  const [showSettings, setShowSettings] = useState(false);
 
   const mode: Mode = useMemo(() => {
     if (tokenIn.isNative && tokenOut.isWrapped) return "wrap";
