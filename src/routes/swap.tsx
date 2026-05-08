@@ -235,7 +235,8 @@ function SwapPage() {
               <span className="shrink-0">Rate</span>
               <span className="text-right truncate">1 {tokenIn.symbol} ≈ {fmt((expectedOut * 10n ** BigInt(tokenIn.decimals)) / (amountInWei || 1n), tokenOut.decimals, 6)} {tokenOut.symbol}</span>
             </div>
-            <div className="flex justify-between"><span>Slippage</span><span>1.00%</span></div>
+            <div className="flex justify-between"><span>Slippage</span><span>{(slippageBps / 100).toFixed(2)}%</span></div>
+            <div className="flex justify-between gap-2"><span className="shrink-0">Min received</span><span className="text-right truncate">{fmt(slippageMin(expectedOut, slippageBps), tokenOut.decimals)} {tokenOut.symbol}</span></div>
             <div className="flex justify-between gap-2">
               <span className="shrink-0">Route</span>
               <span className="text-right truncate text-accent">
