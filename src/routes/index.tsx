@@ -8,12 +8,19 @@ import { factoryAbi } from "@/lib/abis/factory";
 import { pairAbi } from "@/lib/abis/pair";
 import { TOKENS } from "@/lib/tokens";
 import { fmt } from "@/lib/format";
+import { useState } from "react";
+import { useAccount } from "wagmi";
+import { WalletModal } from "@/components/wallet/ConnectButton";
+import { useNavigate } from "@tanstack/react-router";
 
 export const Route = createFileRoute("/")({
   component: Landing,
 });
 
 function Landing() {
+  const [walletOpen, setWalletOpen] = useState(false);
+  const { isConnected } = useAccount();
+  const navigate = useNavigate();
   // Live on-chain stats
   const len = useReadContract({ address: ADDR.factory, abi: factoryAbi, functionName: "allPairsLength", query: { refetchInterval: 20000 } });
   const total = Number((len.data as bigint | undefined) ?? 0n);
@@ -63,6 +70,15 @@ function Landing() {
               gas-efficient wraps, and museum-quality UX — every settlement final on-chain.
             </p>
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
+              <button
+                onClick={() => {
+                  if (isConnected) navigate({ to: "/swap" });
+                  else setWalletOpen(true);
+                }}
+                className="px-7 py-3.5 rounded-xl bg-gradient-gold text-black font-bold shadow-gold hover:-translate-y-0.5 transition-all"
+              >
+                {isConnected ? "Start Swapping →" : "Connect Wallet"}
+              </button>
               <Link
                 to="/swap"
                 className="group relative px-7 py-3.5 rounded-xl bg-gradient-luxe text-primary-foreground font-semibold shadow-neon hover:shadow-gold transition-all hover:-translate-y-0.5 shimmer"
@@ -175,6 +191,7 @@ function Landing() {
           </div>
         </div>
       </section>
+      <WalletModal open={walletOpen} onClose={() => { setWalletOpen(false); if (isConnected) navigate({ to: "/swap" }); }} />
     </div>
   );
 }
