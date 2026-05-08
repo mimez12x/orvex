@@ -226,10 +226,10 @@ function TokenPanel({
   readOnly?: boolean;
 }) {
   return (
-    <div className="bg-surface-2/50 rounded-2xl p-4 border border-border">
-      <div className="flex justify-between text-xs text-muted-foreground mb-2">
-        <span>{label}</span>
-        <span>
+    <div className="bg-surface-2/50 rounded-2xl p-4 border border-border overflow-hidden">
+      <div className="flex justify-between text-xs text-muted-foreground mb-2 gap-2">
+        <span className="shrink-0">{label}</span>
+        <span className="truncate text-right">
           Balance: {fmt(balance, token.decimals)}{" "}
           {!readOnly && balance !== undefined && balance > 0n && (
             <button
@@ -246,10 +246,11 @@ function TokenPanel({
           readOnly={readOnly}
           value={amount}
           onChange={(e) => onAmountChange?.(e.target.value)}
-          className="flex-1 bg-transparent text-3xl font-bold outline-none placeholder:text-muted-foreground/40"
+          className="flex-1 min-w-0 w-full bg-transparent text-3xl font-bold outline-none placeholder:text-muted-foreground/40"
         />
         <TokenSelect value={token} onChange={onTokenChange} exclude={excludeFor} />
       </div>
     </div>
   );
 }
+
