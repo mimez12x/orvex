@@ -103,7 +103,7 @@ function Card({ title, children }: { title: string; children: React.ReactNode })
   );
 }
 
-function SingleInput({ placeholder, onSubmit, disabled }: any) {
+function SingleInput({ placeholder, onSubmit, disabled }: { placeholder?: string; onSubmit: (v: string) => void; disabled?: boolean }) {
   const [v, setV] = useState("");
   return (
     <div className="flex gap-2">
@@ -123,7 +123,7 @@ function TokenSelectIdx({ value, onChange }: { value: number; onChange: (n: numb
   );
 }
 
-function TokenAmountForm({ onSubmit, disabled, placeholder = "100", amountLabel = "amount" }: any) {
+function TokenAmountForm({ onSubmit, disabled, placeholder = "100", amountLabel = "amount" }: { onSubmit: (idx: number, amt: string) => void; disabled?: boolean; placeholder?: string; amountLabel?: string }) {
   const [idx, setIdx] = useState(FAUCET_TOKENS[0].faucetIndex!);
   const [amt, setAmt] = useState("");
   return (
@@ -135,7 +135,7 @@ function TokenAmountForm({ onSubmit, disabled, placeholder = "100", amountLabel 
   );
 }
 
-function SetTokenForm({ onSubmit, disabled }: any) {
+function SetTokenForm({ onSubmit, disabled }: { onSubmit: (idx: number, addr: string) => void; disabled?: boolean }) {
   const [idx, setIdx] = useState(0);
   const [addr, setAddr] = useState("");
   return (
@@ -147,7 +147,7 @@ function SetTokenForm({ onSubmit, disabled }: any) {
   );
 }
 
-function AdminWithdrawForm({ onSubmit, disabled }: any) {
+function AdminWithdrawForm({ onSubmit, disabled }: { onSubmit: (idx: number, amt: string, to: string) => void; disabled?: boolean }) {
   const [idx, setIdx] = useState(FAUCET_TOKENS[0].faucetIndex!);
   const [amt, setAmt] = useState("");
   const [to, setTo] = useState("");
@@ -161,7 +161,7 @@ function AdminWithdrawForm({ onSubmit, disabled }: any) {
   );
 }
 
-function UserClaimForm({ onSubmit, disabled }: any) {
+function UserClaimForm({ onSubmit, disabled }: { onSubmit: (user: string, idx: number, count: string) => void; disabled?: boolean }) {
   const [user, setUser] = useState("");
   const [idx, setIdx] = useState(FAUCET_TOKENS[0].faucetIndex!);
   const [count, setCount] = useState("");
