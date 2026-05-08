@@ -41,21 +41,17 @@ function SwapPage() {
   const balanceIn = tokenIn.isNative ? nativeBal.data?.value : (inBal.data as bigint | undefined);
   const balanceOut = tokenOut.isNative ? nativeBal.data?.value : (outBal.data as bigint | undefined);
 
-  // Build path for swap mode (use wzkLTC as proxy for native)
-  const path = useMemo<`0x${string}`[] | undefined>(() => {
-    if (mode !== "swap") return undefined;
-    const a = (tokenIn.isNative ? ADDR.wzkLTC : tokenIn.address) as `0x${string}`;
-    const b = (tokenOut.isNative ? ADDR.wzkLTC : tokenOut.address) as `0x${string}`;
-    if (a.toLowerCase() === b.toLowerCase()) return undefined;
-    return [a, b];
-  }, [mode, tokenIn, tokenOut]);
+  // Smart routing: best of direct vs multi-hop via WzkLTC
+  const tokenInAddr = (tokenIn.isNative ? ADDR.wzkLTC : tokenIn.address) as `0x${string}`;
+  const tokenOutAddr = (tokenOut.isNative ? ADDR.wzkLTC : tokenOut.address) as `0x${string}`;
+  const route = useBestRoute(mode === "swap" ? amountInWei : 0n, tokenInAddr, tokenOutAddr);
+  const path = mode === "swap" ? route.path : undefined;
 
-  const amountsOut = useAmountsOut(amountInWei, path);
   const expectedOut = useMemo<bigint>(() => {
     if (mode === "wrap" || mode === "unwrap") return amountInWei;
-    const arr = amountsOut.data as bigint[] | undefined;
-    return arr && arr.length > 0 ? arr[arr.length - 1] : 0n;
-  }, [mode, amountInWei, amountsOut.data]);
+    return route.amountOut;
+  }, [mode, amountInWei, route.amountOut]);
+
 
   // Allowance for ERC20 -> router
   const allowance = useAllowance(
