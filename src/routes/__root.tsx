@@ -7,6 +7,11 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
+import { WagmiProvider } from "wagmi";
+import { wagmiConfig } from "@/lib/wagmi";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
+import { ToastProvider } from "@/components/ui/toaster";
 
 import appCss from "../styles.css?url";
 
@@ -72,14 +77,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Lovable App" },
-      { name: "description", content: "Lovable Generated Project" },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Lovable App" },
-      { property: "og:description", content: "Lovable Generated Project" },
+      { title: "ORVEX — Decentralized Exchange on LitVM LiteForge" },
+      { name: "description", content: "ORVEX is a premium AMM DEX on LitVM LiteForge Testnet. Swap, provide liquidity, and earn — fully on-chain." },
+      { name: "author", content: "ORVEX" },
+      { property: "og:title", content: "ORVEX — DEX on LitVM LiteForge" },
+      { property: "og:description", content: "Trade, wrap, and provide liquidity on LitVM LiteForge with ORVEX." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
     ],
     links: [
       {
@@ -112,8 +116,18 @@ function RootComponent() {
   const { queryClient } = Route.useRouteContext();
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <Outlet />
-    </QueryClientProvider>
+    <WagmiProvider config={wagmiConfig}>
+      <QueryClientProvider client={queryClient}>
+        <ToastProvider>
+          <div className="min-h-screen flex flex-col">
+            <Header />
+            <main className="flex-1">
+              <Outlet />
+            </main>
+            <Footer />
+          </div>
+        </ToastProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
   );
 }
