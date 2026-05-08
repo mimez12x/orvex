@@ -55,13 +55,18 @@ function LiquidityPage() {
   );
 }
 
-function AddLiquidity() {
+function AddLiquidity({ prefillA, prefillB }: { prefillA?: string; prefillB?: string }) {
   const { address } = useAccount();
   const toast = useToast();
-  const [tokenA, setTokenA] = useState<Token>(NATIVE);
-  const [tokenB, setTokenB] = useState<Token>(TOKENS.find((t) => t.symbol === "ORVX")!);
+  const [tokenA, setTokenA] = useState<Token>(() => findTokenByAddr(prefillA) ?? NATIVE);
+  const [tokenB, setTokenB] = useState<Token>(() => findTokenByAddr(prefillB) ?? TOKENS.find((t) => t.symbol === "ORVX")!);
   const [amountA, setAmountA] = useState("");
   const [amountB, setAmountB] = useState("");
+  useEffect(() => {
+    const a = findTokenByAddr(prefillA); const b = findTokenByAddr(prefillB);
+    if (a) setTokenA(a); if (b) setTokenB(b);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [prefillA, prefillB]);
 
   const amtAWei = safeParse(amountA, tokenA.decimals);
   const amtBWei = safeParse(amountB, tokenB.decimals);
