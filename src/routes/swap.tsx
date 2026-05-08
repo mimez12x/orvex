@@ -119,8 +119,8 @@ function SwapPage() {
         return;
       }
       if (!path) return;
-      const minOut = slippageMin(expectedOut, 100); // 1% slippage
-      const dl = deadline(20);
+      const minOut = slippageMin(expectedOut, slippageBps);
+      const dl = deadline(deadlineMin);
       let hash: `0x${string}`;
       if (tokenIn.isNative) {
         hash = await writeContractAsync({
