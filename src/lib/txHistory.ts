@@ -37,7 +37,7 @@ function persist() {
 export function addTx(rec: { hash: string; title: string; account: string }) {
   if (!rec.hash || !rec.account) return;
   state = [
-    { ...rec, ts: Date.now(), status: "pending" },
+    { ...rec, ts: Date.now(), status: "pending" as TxStatus },
     ...state.filter((x) => x.hash.toLowerCase() !== rec.hash.toLowerCase()),
   ].slice(0, MAX);
   persist();
