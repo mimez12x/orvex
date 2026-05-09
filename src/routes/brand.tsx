@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import type { ReactNode } from "react";
 import logo from "@/assets/orvex-logo.png";
 
 export const Route = createFileRoute("/brand")({
@@ -161,7 +162,7 @@ function BrandPage() {
   );
 }
 
-function Section({ title, subtitle, children }: { title: string; subtitle?: string; children: React.ReactNode }) {
+function Section({ title, subtitle, children }: { title: string; subtitle?: string; children: ReactNode }) {
   return (
     <section className="mb-8">
       <div className="flex items-baseline justify-between mb-3 flex-wrap gap-2">
@@ -173,7 +174,7 @@ function Section({ title, subtitle, children }: { title: string; subtitle?: stri
   );
 }
 
-function Tile({ label, cls, children }: { label: string; cls: string; children: React.ReactNode }) {
+function Tile({ label, cls, children }: { label: string; cls: string; children: ReactNode }) {
   return (
     <div className="rounded-2xl overflow-hidden border border-border">
       <div className={`${cls} h-28 flex items-center justify-center`}>{children}</div>
