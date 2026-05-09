@@ -37,11 +37,13 @@ function FaucetPage() {
   const [hash, setHash] = useState<`0x${string}` | undefined>();
   const receipt = useWaitForTransactionReceipt({ hash });
 
-  // ───── Anti-bot captcha ─────
-  const [captcha, setCaptcha] = useState(() => genCaptcha());
+  // ───── Anti-bot captcha (client-only to avoid SSR hydration mismatch) ─────
+  const [captcha, setCaptcha] = useState<{ a: number; b: number; answer: number } | null>(null);
   const [captchaInput, setCaptchaInput] = useState("");
   const [verified, setVerified] = useState(false);
-  const captchaOk = verified && Number(captchaInput) === captcha.answer;
+  const captchaOk = !!captcha && verified && Number(captchaInput) === captcha.answer;
+
+  useEffect(() => { if (!captcha) setCaptcha(genCaptcha()); }, [captcha]);
 
   function refreshCaptcha() {
     setCaptcha(genCaptcha());
@@ -157,8 +159,9 @@ function FaucetPage() {
               <div
                 className="select-none px-4 py-2 rounded-xl bg-gradient-brand text-primary-foreground font-mono text-lg tracking-[0.4em] font-bold"
                 style={{ textShadow: "0 0 12px rgba(255,255,255,0.4)", letterSpacing: "0.4em" }}
+                suppressHydrationWarning
               >
-                {captcha.a} + {captcha.b} = ?
+                {captcha ? `${captcha.a} + ${captcha.b} = ?` : "··· + ··· = ?"}
               </div>
               <input
                 inputMode="numeric"
@@ -170,7 +173,7 @@ function FaucetPage() {
               />
               <button
                 onClick={() => {
-                  if (Number(captchaInput) === captcha.answer) setVerified(true);
+                  if (captcha && Number(captchaInput) === captcha.answer) setVerified(true);
                   else { setVerified(false); refreshCaptcha(); toast.push({ title: "Captcha salah", type: "error" }); }
                 }}
                 disabled={!captchaInput}
