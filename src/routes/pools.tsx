@@ -9,7 +9,8 @@ import { useEffect, useMemo, useState } from "react";
 import { usePoolStats, fmtWzk, type PoolMeta } from "@/lib/poolStats";
 import { useToast } from "@/components/ui/toaster";
 
-type SortKey = "tvl" | "supply" | "new";
+type SortKey = "tvl" | "supply" | "new" | "vol";
+type Filter = "all" | "stable" | "blue" | "high" | "mine";
 
 export const Route = createFileRoute("/pools")({
   component: PoolsPage,
@@ -19,7 +20,7 @@ export const Route = createFileRoute("/pools")({
 function PoolsPage() {
   const [q, setQ] = useState("");
   const [sort, setSort] = useState<SortKey>("tvl");
-  const [onlyMine, setOnlyMine] = useState(false);
+  const [filter, setFilter] = useState<Filter>("all");
 
   const len = useReadContract({ address: ADDR.factory, abi: factoryAbi, functionName: "allPairsLength", query: { refetchInterval: 15000 } });
   const total = Number((len.data as bigint | undefined) ?? 0n);
@@ -39,58 +40,41 @@ function PoolsPage() {
     .filter(Boolean) as `0x${string}`[];
 
   return (
-    <div className="relative max-w-5xl mx-auto px-4 py-12">
+    <div className="relative max-w-7xl mx-auto px-4 py-10">
       {/* Aurora backdrop */}
-      <div className="pointer-events-none absolute inset-x-0 -top-10 h-[420px] overflow-hidden -z-10">
+      <div className="pointer-events-none absolute inset-x-0 -top-10 h-[520px] overflow-hidden -z-10">
         <div className="absolute -top-24 left-1/4 h-72 w-72 rounded-full blur-3xl animate-aurora" style={{ background: "var(--gradient-luxe)" }} />
         <div className="absolute top-10 right-10 h-80 w-80 rounded-full blur-3xl animate-aurora-2" style={{ background: "var(--gradient-gold)" }} />
       </div>
 
-      <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 mb-6 animate-rise">
-        <div>
-          <div className="text-[11px] tracking-[0.3em] uppercase text-gradient-gold font-semibold mb-2">Atelier · Liquidity</div>
-          <h1 className="text-4xl md:text-5xl font-extrabold text-gradient-luxe tracking-tight">Pools</h1>
-          <p className="text-sm text-muted-foreground mt-1">All liquidity pairs on ORVEX • <span className="text-foreground/80 font-semibold">{total}</span> pools live</p>
-        </div>
-        <Link
-          to="/liquidity"
-          className="px-5 py-2.5 rounded-full bg-gradient-luxe text-primary-foreground font-semibold text-sm shadow-neon hover:-translate-y-0.5 hover:shadow-gold transition-all w-fit"
-        >+ Create / Add Liquidity</Link>
+      <div className="mb-6 animate-rise">
+        <div className="text-[11px] tracking-[0.3em] uppercase text-gradient-gold font-semibold mb-2">Atelier · Liquidity</div>
+        <h1 className="text-4xl md:text-5xl font-extrabold text-gradient-luxe tracking-tight">Pools</h1>
+        <p className="text-sm text-muted-foreground mt-1">All liquidity pairs on ORVEX • <span className="text-foreground/80 font-semibold">{total}</span> pools live</p>
       </div>
 
-      <div className="glass rounded-2xl p-4 mb-4 flex flex-wrap items-center gap-3">
-        <div className="flex-1 min-w-[200px] flex items-center gap-2 bg-surface-2 rounded-xl px-3 py-2 border border-border">
-          <span className="text-muted-foreground text-sm">⌕</span>
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Search by token symbol or pair address…"
-            className="flex-1 bg-transparent outline-none text-sm"
-          />
-        </div>
-        <div className="flex gap-1 bg-surface-2 rounded-xl p-1 border border-border">
-          {(["tvl", "supply", "new"] as SortKey[]).map((k) => (
-            <button
-              key={k}
-              onClick={() => setSort(k)}
-              className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${sort === k ? "bg-gradient-brand text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
-            >{k === "tvl" ? "TVL" : k === "supply" ? "LP Supply" : "Newest"}</button>
-          ))}
-        </div>
-        <button
-          onClick={() => setOnlyMine((v) => !v)}
-          className={`px-3 py-1.5 rounded-xl text-xs font-medium border transition ${onlyMine ? "bg-gradient-brand text-primary-foreground border-transparent" : "bg-surface-2 border-border text-muted-foreground hover:border-primary/60"}`}
-        >My pools</button>
-      </div>
-
-      <PoolList pairAddrs={pairAddrs} q={q} sort={sort} onlyMine={onlyMine} />
+      <PoolList
+        pairAddrs={pairAddrs}
+        q={q}
+        sort={sort}
+        filter={filter}
+        setQ={setQ}
+        setSort={setSort}
+        setFilter={setFilter}
+        total={total}
+      />
 
       <CreatePairCard />
     </div>
   );
 }
 
-function PoolList({ pairAddrs, q, sort, onlyMine }: { pairAddrs: `0x${string}`[]; q: string; sort: SortKey; onlyMine: boolean }) {
+function PoolList({
+  pairAddrs, q, sort, filter, setQ, setSort, setFilter, total,
+}: {
+  pairAddrs: `0x${string}`[]; q: string; sort: SortKey; filter: Filter;
+  setQ: (v: string) => void; setSort: (s: SortKey) => void; setFilter: (f: Filter) => void; total: number;
+}) {
   const { address } = useAccount();
 
   // Fetch metadata for all pairs in batched contract reads
@@ -158,126 +142,210 @@ function PoolList({ pairAddrs, q, sort, onlyMine }: { pairAddrs: `0x${string}`[]
         p.tk1?.name.toLowerCase().includes(term),
       );
     }
-    if (onlyMine) out = out.filter((p) => (p.myLp ?? 0n) > 0n);
+    const STABLE = new Set(["USDT", "USDC", "DAI", "wzkLTC"]);
+    const BLUE = new Set(["zkLTC", "wzkLTC", "TRX", "XRP", "ADA"]);
+    if (filter === "mine") out = out.filter((p) => (p.myLp ?? 0n) > 0n);
+    else if (filter === "stable") out = out.filter((p) => STABLE.has(p.tk0?.symbol ?? "") && STABLE.has(p.tk1?.symbol ?? ""));
+    else if (filter === "blue") out = out.filter((p) => BLUE.has(p.tk0?.symbol ?? "") || BLUE.has(p.tk1?.symbol ?? ""));
+    else if (filter === "high") out = [...out].sort((a, b) => (a.vol < b.vol ? 1 : -1));
     if (sort === "tvl") out = [...out].sort((a, b) => (a.tvl < b.tvl ? 1 : a.tvl > b.tvl ? -1 : 0));
+    else if (sort === "vol") out = [...out].sort((a, b) => (a.vol < b.vol ? 1 : a.vol > b.vol ? -1 : 0));
     else if (sort === "supply") out = [...out].sort((a, b) => ((a.ts ?? 0n) < (b.ts ?? 0n) ? 1 : (a.ts ?? 0n) > (b.ts ?? 0n) ? -1 : 0));
     else out = [...out].sort((a, b) => b.idx - a.idx);
     return out;
-  }, [enriched, q, sort, onlyMine]);
-
-  if (pairAddrs.length === 0) {
-    return (
-      <div className="glass rounded-2xl p-10 text-center text-muted-foreground">
-        No pools yet. <Link to="/liquidity" className="text-accent hover:underline">Be the first to add liquidity →</Link>
-      </div>
-    );
-  }
-  if (filtered.length === 0) {
-    return <div className="glass rounded-2xl p-8 text-center text-muted-foreground text-sm">No pools match your filters.</div>;
-  }
+  }, [enriched, q, sort, filter]);
 
   // Aggregate totals across visible pools
-  const totalTvl = filtered.reduce<bigint>((a, p) => a + p.tvl, 0n);
-  const totalVol = filtered.reduce<bigint>((a, p) => a + p.vol, 0n);
-  const totalSwaps = filtered.reduce<number>((a, p) => a + p.swaps, 0);
+  const totalTvl = enriched.reduce<bigint>((a, p) => a + p.tvl, 0n);
+  const totalVol = enriched.reduce<bigint>((a, p) => a + p.vol, 0n);
+  const totalSwaps = enriched.reduce<number>((a, p) => a + p.swaps, 0);
+  const totalFees = (totalVol * 3n) / 1000n; // 0.3% fee tier
+  const trending = [...enriched].sort((a, b) => (a.vol < b.vol ? 1 : -1)).slice(0, 6);
 
   return (
     <>
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4">
-        <SummaryStat label="Total TVL" value={`${fmtWzk(totalTvl)} wzkLTC`} />
-        <SummaryStat label="24h Volume" value={`${fmtWzk(totalVol)} wzkLTC`} />
-        <SummaryStat label="24h Swaps" value={totalSwaps.toString()} />
-        <SummaryStat label="Pools shown" value={filtered.length.toString()} />
+      {/* Top stats row */}
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-5 animate-rise">
+        <BigStat label="Total Value Locked" value={fmtWzk(totalTvl)} unit="wzkLTC" tone="violet" />
+        <BigStat label="Avg Fee Tier" value="0.30%" unit="per swap" tone="cyan" />
+        <BigStat label="24h Volume" value={fmtWzk(totalVol)} unit="wzkLTC" tone="cyan" />
+        <BigStat label="Total Fees (24h)" value={fmtWzk(totalFees)} unit="wzkLTC" tone="gold" />
+        <BigStat label="Total Pools" value={String(total)} unit="live" tone="violet" />
       </div>
-    <div className="space-y-3">
-      {filtered.map((p) => {
+
+      {/* Filter / Control bar */}
+      <div className="glass rounded-2xl p-4 mb-5 flex flex-wrap items-center gap-3 animate-rise" style={{ animationDelay: "60ms" }}>
+        <div className="text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">Filter & Control</div>
+        <div className="flex-1 min-w-[200px] flex items-center gap-2 bg-surface-2 rounded-xl px-3 py-2 border border-border">
+          <span className="text-muted-foreground text-sm">⌕</span>
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Search…"
+            className="flex-1 bg-transparent outline-none text-sm"
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-muted-foreground">Sort</span>
+          <select
+            value={sort}
+            onChange={(e) => setSort(e.target.value as SortKey)}
+            className="bg-surface-2 border border-border rounded-xl px-3 py-2 text-xs focus:border-primary outline-none"
+          >
+            <option value="tvl">TVL</option>
+            <option value="vol">Volume</option>
+            <option value="supply">LP Supply</option>
+            <option value="new">Newest</option>
+          </select>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap items-center gap-2 mb-5 animate-rise" style={{ animationDelay: "90ms" }}>
+        {([
+          { k: "all", l: "All" },
+          { k: "stable", l: "Stable Pairs" },
+          { k: "blue", l: "Blue Chip" },
+          { k: "high", l: "High Volume" },
+          { k: "mine", l: "My Pools" },
+        ] as { k: Filter; l: string }[]).map(({ k, l }) => (
+          <button
+            key={k}
+            onClick={() => setFilter(k)}
+            className={`px-4 py-1.5 rounded-full text-xs font-semibold border transition ${
+              filter === k
+                ? "bg-gradient-luxe text-primary-foreground border-transparent shadow-neon"
+                : "bg-surface-2 border-border text-muted-foreground hover:border-primary/60 hover:text-foreground"
+            }`}
+          >{l}</button>
+        ))}
+      </div>
+
+      {pairAddrs.length === 0 ? (
+        <div className="glass rounded-2xl p-10 text-center text-muted-foreground mb-8">
+          No pools yet. <Link to="/liquidity" className="text-accent hover:underline">Be the first to add liquidity →</Link>
+        </div>
+      ) : filtered.length === 0 ? (
+        <div className="glass rounded-2xl p-8 text-center text-muted-foreground text-sm mb-8">No pools match your filters.</div>
+      ) : (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+          {filtered.map((p, idx) => (
+            <PoolCard key={p.pair} p={p} idx={idx} />
+          ))}
+        </div>
+      )}
+
+      {/* Floating Create New Pool CTA */}
+      <div className="flex justify-center my-8 animate-rise" style={{ animationDelay: "150ms" }}>
+        <Link
+          to="/liquidity"
+          className="group inline-flex items-center gap-3 px-8 py-4 rounded-full bg-gradient-luxe text-primary-foreground font-bold shadow-neon hover:shadow-gold hover:-translate-y-0.5 transition-all"
+        >
+          <span className="text-2xl">✨</span>
+          <span className="flex flex-col items-start leading-tight">
+            <span className="text-lg">Create New Pool</span>
+            <span className="text-[11px] opacity-80 font-medium">Add Liquidity → Earn 0.3% fees</span>
+          </span>
+        </Link>
+      </div>
+
+      {/* Trending pools (compact list) */}
+      {trending.length > 0 && (
+        <div className="glass-strong rounded-3xl p-6 animate-rise" style={{ animationDelay: "180ms" }}>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold tracking-tight">🔥 Trending Pools</h2>
+            <span className="text-xs text-muted-foreground">Sorted by 24h volume</span>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-2">
+            {trending.map((p) => (
+              <Link
+                key={p.pair}
+                to="/swap"
+                search={{ from: p.t0, to: p.t1 }}
+                className="flex items-center gap-3 p-3 rounded-xl bg-surface-2/50 hover:bg-surface-2 border border-border hover:border-primary/40 transition"
+              >
+                <div className="flex -space-x-2 shrink-0">
+                  {p.tk0 && <img src={p.tk0.logo} alt={p.tk0.symbol} className="h-7 w-7 rounded-full ring-2 ring-background" />}
+                  {p.tk1 && <img src={p.tk1.logo} alt={p.tk1.symbol} className="h-7 w-7 rounded-full ring-2 ring-background" />}
+                </div>
+                <div className="font-semibold text-sm flex-1 truncate">{p.tk0?.symbol ?? "?"}-{p.tk1?.symbol ?? "?"}</div>
+                <div className="font-mono text-xs text-gradient-gold tabular-nums">{fmtWzk(p.vol)}</div>
+                <div className="text-[10px] text-muted-foreground">{p.swaps} sw</div>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
+
+function PoolCard({ p, idx }: { p: any; idx: number }) {
         const sharePct = p.myLp && p.ts && p.ts > 0n
           ? Number((p.myLp * 10000n) / p.ts) / 100
           : 0;
         return (
           <div
-            key={p.pair}
-            className="glass rounded-2xl p-5 card-hover group animate-rise"
-            style={{ animationDelay: `${Math.min(filtered.indexOf(p) * 40, 320)}ms` }}
+            className="glass rounded-2xl p-5 card-hover group animate-rise relative overflow-hidden"
+            style={{ animationDelay: `${Math.min(idx * 40, 320)}ms` }}
           >
-            <div className="flex items-center justify-between flex-wrap gap-4">
-              <div className="flex items-center gap-3 min-w-0">
-                <div className="flex -space-x-2 shrink-0">
-                  {p.tk0 && <img src={p.tk0.logo} alt={p.tk0.symbol} className="h-10 w-10 rounded-full ring-2 ring-background" />}
-                  {p.tk1 && <img src={p.tk1.logo} alt={p.tk1.symbol} className="h-10 w-10 rounded-full ring-2 ring-background" />}
-                </div>
-                <div className="min-w-0">
-                  <div className="font-bold flex items-center gap-2 flex-wrap">
-                    {p.tk0?.symbol ?? "?"} / {p.tk1?.symbol ?? "?"}
-                    {sharePct > 0 && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-accent/20 text-accent">
-                        Your share {sharePct < 0.01 ? "<0.01" : sharePct.toFixed(2)}%
-                      </span>
-                    )}
+            <div className="absolute -top-12 -right-12 h-32 w-32 rounded-full blur-2xl opacity-30 group-hover:opacity-60 transition-opacity" style={{ background: "var(--gradient-luxe)" }} />
+            <div className="relative">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-[10px] px-2 py-0.5 rounded-full bg-surface-2 border border-border font-mono uppercase tracking-wider text-muted-foreground">
+                  {p.tk0?.symbol ?? "?"}-{p.tk1?.symbol ?? "?"}
+                </span>
+                {sharePct > 0 && (
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-accent/20 text-accent border border-accent/30">YOURS</span>
+                )}
+              </div>
+              <div className="flex items-center justify-center my-5">
+                <div className="relative">
+                  <div className="absolute inset-0 rounded-full blur-xl opacity-50" style={{ background: "var(--gradient-luxe)" }} />
+                  <div className="relative flex -space-x-3">
+                    {p.tk0 && <img src={p.tk0.logo} alt={p.tk0.symbol} className="h-14 w-14 rounded-full ring-4 ring-background" />}
+                    {p.tk1 && <img src={p.tk1.logo} alt={p.tk1.symbol} className="h-14 w-14 rounded-full ring-4 ring-background" />}
                   </div>
-                  <a href={explorerAddr(p.pair)} target="_blank" rel="noreferrer"
-                    className="text-xs text-muted-foreground font-mono hover:text-accent">
-                    {p.pair.slice(0, 10)}…{p.pair.slice(-6)} ↗
-                  </a>
                 </div>
               </div>
-              <div className="flex gap-5 text-sm shrink-0 flex-wrap">
-                <div>
-                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground">TVL</div>
-                  <div className="font-mono font-semibold text-gradient-gold">{fmtWzk(p.tvl)} <span className="text-[10px] text-muted-foreground">wzkLTC</span></div>
+              <div className="text-center mb-3">
+                <div className="font-bold text-lg tracking-tight">{p.tk0?.symbol ?? "?"}–{p.tk1?.symbol ?? "?"}</div>
+                <a href={explorerAddr(p.pair)} target="_blank" rel="noreferrer"
+                  className="text-[10px] text-muted-foreground font-mono hover:text-accent">
+                  {p.pair.slice(0, 8)}…{p.pair.slice(-4)} ↗
+                </a>
+              </div>
+              <div className="grid grid-cols-2 gap-2 text-xs mb-3">
+                <div className="rounded-lg bg-surface-2/60 p-2">
+                  <div className="text-[9px] uppercase text-muted-foreground tracking-wider">TVL</div>
+                  <div className="font-mono font-semibold text-gradient-gold tabular-nums">{fmtWzk(p.tvl)}</div>
                 </div>
-                <div>
-                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground">24h Vol</div>
-                  <div className="font-mono">{fmtWzk(p.vol)} <span className="text-[10px] text-muted-foreground">wzkLTC</span></div>
-                  <div className="text-[10px] text-muted-foreground">{p.swaps} swaps</div>
-                </div>
-                <div>
-                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Reserves</div>
-                  <div className="font-mono text-xs">{fmt(p.r?.[0], p.tk0?.decimals ?? 18, 2)} {p.tk0?.symbol}</div>
-                  <div className="font-mono text-xs">{fmt(p.r?.[1], p.tk1?.decimals ?? 18, 2)} {p.tk1?.symbol}</div>
-                </div>
-                <div>
-                  <div className="text-[10px] uppercase tracking-wider text-muted-foreground">LP Supply</div>
-                  <div className="font-mono">{fmt(p.ts, 18, 2)}</div>
+                <div className="rounded-lg bg-surface-2/60 p-2">
+                  <div className="text-[9px] uppercase text-muted-foreground tracking-wider">24h Vol</div>
+                  <div className="font-mono tabular-nums">{fmtWzk(p.vol)}</div>
                 </div>
               </div>
-            </div>
-            <div className="flex gap-2 mt-4">
-              {p.t0 && p.t1 && (
-                <Link
-                  to="/swap"
-                  search={{ from: p.t0, to: p.t1 }}
-                  className="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-gradient-brand text-primary-foreground text-sm font-semibold text-center hover:opacity-95 transition"
-                >Trade</Link>
-              )}
-              {p.t0 && p.t1 && (
-                <Link
-                  to="/liquidity"
-                  search={{ a: p.t0, b: p.t1 }}
-                  className="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-surface-2 border border-border text-sm font-semibold text-center hover:border-primary/60 transition"
-                >Add Liquidity</Link>
-              )}
-              {sharePct > 0 && p.t0 && p.t1 && (
-                <Link
-                  to="/liquidity"
-                  search={{ a: p.t0, b: p.t1, tab: "remove" }}
-                  className="flex-1 sm:flex-none px-4 py-2 rounded-xl bg-surface-2 border border-border text-sm font-semibold text-center hover:border-destructive/60 transition"
-                >Remove</Link>
-              )}
+              <div className="flex items-center justify-between text-[10px] text-muted-foreground mb-3 px-1">
+                <span>0.3% Fee</span>
+                <span>{p.swaps} swaps</span>
+                <span>LP {fmt(p.ts, 18, 1)}</span>
+              </div>
+              <Link
+                to="/liquidity"
+                search={{ a: p.t0, b: p.t1 }}
+                className="block w-full text-center py-2.5 rounded-xl bg-gradient-brand text-primary-foreground text-sm font-semibold hover:opacity-95 transition shadow-neon"
+              >Add Liquidity</Link>
             </div>
           </div>
         );
-      })}
-    </div>
-    </>
-  );
 }
 
-function SummaryStat({ label, value }: { label: string; value: string }) {
+function BigStat({ label, value, unit, tone }: { label: string; value: string; unit: string; tone: "violet" | "cyan" | "gold" }) {
+  const grad = tone === "gold" ? "text-gradient-gold" : tone === "cyan" ? "text-accent" : "text-gradient-luxe";
   return (
-    <div className="glass rounded-2xl p-4">
-      <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground">{label}</div>
-      <div className="font-bold text-lg text-gradient-luxe">{value}</div>
+    <div className="glass rounded-2xl p-4 card-hover">
+      <div className="text-[10px] uppercase tracking-[0.18em] text-muted-foreground mb-1">{label}</div>
+      <div className={`font-black text-2xl tabular-nums ${grad}`}>{value}</div>
+      <div className="text-[10px] text-muted-foreground mt-0.5">{unit}</div>
     </div>
   );
 }
