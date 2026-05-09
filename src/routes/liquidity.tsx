@@ -34,10 +34,39 @@ function LiquidityPage() {
   const [tab, setTab] = useState<"add" | "remove">(sp.tab ?? "add");
   useEffect(() => { if (sp.tab) setTab(sp.tab); }, [sp.tab]);
   return (
-    <div className="max-w-md mx-auto px-4 py-12">
-      <div className="glass-strong rounded-3xl p-6 shadow-neon">
+    <div className="relative min-h-[calc(100vh-4rem)] overflow-hidden">
+      <div className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute -top-32 right-1/4 h-[520px] w-[520px] rounded-full bg-[oklch(0.55_0.28_295)/0.25] blur-3xl animate-aurora" />
+        <div className="absolute top-32 left-10 h-[420px] w-[420px] rounded-full bg-[oklch(0.65_0.22_220)/0.18] blur-3xl animate-aurora-2" />
+        <div className="absolute bottom-0 right-10 h-[360px] w-[360px] rounded-full bg-[oklch(0.75_0.18_85)/0.18] blur-3xl animate-aurora" />
+      </div>
+
+      <div className="max-w-6xl mx-auto px-4 pt-12 pb-8 grid lg:grid-cols-[1fr_minmax(420px,460px)_1fr] gap-8 items-start">
+        <div className="hidden lg:block animate-rise space-y-6 pt-8">
+          <span className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-2/70 border border-border text-[11px] uppercase tracking-[0.2em] text-muted-foreground">
+            <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" /> ORVEX · Liquidity
+          </span>
+          <h2 className="text-5xl font-bold leading-[1.05]">
+            Provide liquidity.<br/>
+            <span className="text-gradient-brand">Earn fees</span> on every swap.
+          </h2>
+          <p className="text-muted-foreground max-w-sm">
+            Deposit a token pair, mint LP tokens, and collect 0.30% from every trade routed through your pool.
+          </p>
+          <ul className="space-y-2 text-sm text-muted-foreground">
+            <li className="flex gap-2"><span className="text-accent">◆</span> Constant-product AMM (UniV2-style)</li>
+            <li className="flex gap-2"><span className="text-accent">◆</span> Auto-zaps via WzkLTC for native zkLTC</li>
+            <li className="flex gap-2"><span className="text-accent">◆</span> Withdraw anytime — no lockup</li>
+          </ul>
+        </div>
+
+        <div className="animated-border rounded-3xl mx-auto w-full max-w-md animate-rise" style={{ animationDelay: "80ms" }}>
+        <div className="glass-strong rounded-3xl p-6 shadow-neon">
         <div className="flex items-center justify-between mb-5">
-          <h1 className="text-2xl font-bold">Liquidity</h1>
+          <div>
+            <h1 className="text-2xl font-bold tracking-tight">Liquidity</h1>
+            <div className="text-[11px] text-muted-foreground mt-0.5">Mint or redeem LP positions</div>
+          </div>
           <div className="flex gap-1 bg-surface-2 rounded-xl p-1">
             <button
               onClick={() => setTab("add")}
@@ -50,6 +79,22 @@ function LiquidityPage() {
           </div>
         </div>
         {tab === "add" ? <AddLiquidity prefillA={sp.a} prefillB={sp.b} /> : <RemoveLiquidity prefillA={sp.a} prefillB={sp.b} />}
+        </div>
+        </div>
+
+        <div className="hidden lg:block animate-rise space-y-3 pt-8" style={{ animationDelay: "160ms" }}>
+          <div className="rounded-2xl glass-strong border border-border p-5">
+            <div className="text-xs uppercase tracking-widest text-muted-foreground mb-2">Fee tier</div>
+            <div className="text-3xl font-bold text-gradient-brand">0.30%</div>
+            <div className="text-[11px] text-muted-foreground mt-1">Pro-rata share to LP holders</div>
+          </div>
+          <div className="rounded-2xl glass border border-border p-5">
+            <div className="text-xs uppercase tracking-widest text-muted-foreground mb-2">Heads up</div>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Adding to a non-existent pair will create one and set the initial price from your deposit ratio.
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   );
