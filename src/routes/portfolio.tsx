@@ -232,7 +232,7 @@ function LPRow({ pair, balance, t0, t1, valueWzk, sharePct, vol24Wzk, swaps24, u
   const tk0 = t0 ? TOKENS.find((x) => x.address.toLowerCase() === t0.toLowerCase()) : undefined;
   const tk1 = t1 ? TOKENS.find((x) => x.address.toLowerCase() === t1.toLowerCase()) : undefined;
   return (
-    <a href={explorerAddr(pair)} target="_blank" rel="noreferrer" className="glass rounded-2xl p-4 block hover:neon-border transition">
+    <a href={explorerAddr(pair)} target="_blank" rel="noreferrer" className="glass rounded-2xl p-4 block card-hover animate-rise">
       <div className="flex items-start justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-3 min-w-0">
           <div className="flex -space-x-2 shrink-0">
