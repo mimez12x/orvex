@@ -65,20 +65,78 @@ function FaucetPage() {
 
   const cd = (cooldown.data as bigint | undefined) ?? 0n;
 
+  const totalDistributed = FAUCET_TOKENS.reduce((acc, _t, i) => {
+    const off = (address ? 4 : 2) * i;
+    const amt = (reads.data?.[off]?.result as bigint | undefined) ?? 0n;
+    const max = (reads.data?.[off + 1]?.result as bigint | undefined) ?? 0n;
+    return acc + amt * max;
+  }, 0n);
+  const totalDistFmt = totalDistributed > 0n
+    ? `${(Number(totalDistributed / 10n ** 18n) / 1e6).toFixed(2)}M`
+    : "—";
+
   return (
-    <div className="max-w-5xl mx-auto px-4 py-12">
-      <div className="text-center mb-10 relative">
-        <Faucet3D />
-        <h1 className="text-4xl md:text-5xl font-extrabold mt-4">Test Token <span className="text-gradient-brand">Faucet</span></h1>
-        <p className="text-muted-foreground mt-2">Claim per-token, or grab them all in one transaction.</p>
-        <button
-          onClick={claimAll}
-          disabled={!address || isPending || !!hash}
-          className="mt-6 px-7 py-3 rounded-xl bg-gradient-brand text-primary-foreground font-bold shadow-neon disabled:opacity-40"
-        >
-          {!address ? "Connect wallet" : isPending || hash ? "Confirming…" : "💧 Claim All"}
-        </button>
-        <div className="text-xs text-muted-foreground mt-2">Cooldown: {Number(cd)}s</div>
+    <div className="relative max-w-6xl mx-auto px-4 py-10">
+      {/* Aurora backdrop */}
+      <div className="pointer-events-none absolute inset-x-0 -top-10 h-[520px] overflow-hidden -z-10">
+        <div className="absolute -top-32 left-1/4 h-80 w-80 rounded-full blur-3xl animate-aurora" style={{ background: "var(--gradient-luxe)" }} />
+        <div className="absolute top-10 right-10 h-96 w-96 rounded-full blur-3xl animate-aurora-2" style={{ background: "var(--gradient-brand)" }} />
+        <div className="absolute inset-0 grid-bg opacity-30" />
+      </div>
+
+      {/* HERO */}
+      <div className="relative glass-strong rounded-[2rem] p-8 md:p-12 mb-8 overflow-hidden animate-rise">
+        <div className="absolute inset-0 -z-0 opacity-40 grid-bg" />
+        <FloatingCoins />
+        <div className="relative text-center">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-accent/10 border border-accent/30 text-accent text-xs font-semibold tracking-[0.25em] uppercase mb-6">
+            💧 Claim Free Crypto Every Hour
+          </div>
+          <h1 className="text-5xl md:text-7xl font-black tracking-tight leading-[1.05]">
+            Get <span className="text-gradient-luxe">Free Tokens</span><br/>Instantly
+          </h1>
+          <p className="text-muted-foreground mt-4 text-lg">Real on-chain test tokens on LitVM LiteForge Testnet</p>
+        </div>
+      </div>
+
+      {/* STATS + CLAIM PANEL */}
+      <div className="grid lg:grid-cols-3 gap-4 mb-8">
+        <div className="space-y-4 animate-rise" style={{ animationDelay: "60ms" }}>
+          <StatCard label="Total Distributed" value={totalDistFmt} unit="Tokens" icon="📦" />
+          <StatCard label="Active Tokens" value={String(FAUCET_TOKENS.length)} unit="Assets" icon="🪙" />
+          <StatCard label="Cooldown" value={`${Number(cd)}s`} unit="Per claim" icon="⏱" />
+        </div>
+
+        <div className="lg:col-span-2 glass-strong rounded-3xl p-6 md:p-8 animated-border animate-rise" style={{ animationDelay: "120ms" }}>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-2xl font-bold">Faucet Claim</h2>
+            <span className="text-[10px] uppercase tracking-[0.2em] text-accent px-3 py-1 rounded-full bg-accent/10 border border-accent/30">Live</span>
+          </div>
+          <div className="flex flex-wrap gap-2 mb-5">
+            {FAUCET_TOKENS.map((t) => (
+              <div key={t.address} className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-surface-2 border border-border text-sm">
+                <img src={t.logo} alt={t.symbol} className="h-5 w-5 rounded-full" />
+                <span className="font-semibold">{t.symbol}</span>
+              </div>
+            ))}
+          </div>
+          <div className="rounded-2xl bg-surface-2 border border-border p-4 mb-5">
+            <div className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground mb-2">Recipient address</div>
+            <div className="font-mono text-sm break-all">{address ?? "Connect a wallet to receive tokens…"}</div>
+          </div>
+          <button
+            onClick={claimAll}
+            disabled={!address || isPending || !!hash}
+            className="w-full py-4 rounded-2xl bg-gradient-luxe text-primary-foreground font-bold text-lg shadow-neon hover:shadow-gold hover:-translate-y-0.5 transition-all disabled:opacity-40 disabled:translate-y-0"
+          >
+            {!address ? "Connect Wallet" : isPending || hash ? "Confirming…" : "💧 Claim All Now"}
+          </button>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-3 mb-4">
+        <h2 className="text-xl font-bold tracking-tight">Per-token Claims</h2>
+        <div className="flex-1 h-px bg-gradient-to-r from-border to-transparent" />
       </div>
 
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -93,9 +151,12 @@ function FaucetPage() {
           const wait = ready ? 0 : Number((last! + cd) - now);
           const remaining = max && userCnt !== undefined ? max - userCnt : undefined;
           return (
-            <div key={t.address} className="glass rounded-2xl p-5 hover:neon-border transition">
+            <div key={t.address} className="glass rounded-2xl p-5 card-hover animate-rise" style={{ animationDelay: `${Math.min(i * 50, 320)}ms` }}>
               <div className="flex items-center gap-3 mb-3">
-                <img src={t.logo} alt={t.symbol} className="h-12 w-12 rounded-full" />
+                <div className="relative">
+                  <div className="absolute inset-0 rounded-full blur-md opacity-60" style={{ background: "var(--gradient-brand)" }} />
+                  <img src={t.logo} alt={t.symbol} className="relative h-12 w-12 rounded-full ring-2 ring-background" />
+                </div>
                 <div>
                   <div className="font-bold text-lg">{t.symbol}</div>
                   <div className="text-xs text-muted-foreground">{t.name}</div>
@@ -126,7 +187,40 @@ function FaucetPage() {
   );
 }
 
-function Faucet3D() {
+function StatCard({ label, value, unit, icon }: { label: string; value: string; unit: string; icon: string }) {
+  return (
+    <div className="glass rounded-2xl p-5 card-hover">
+      <div className="flex items-center justify-between mb-3">
+        <div className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground">{label}</div>
+        <div className="h-9 w-9 rounded-xl bg-surface-2 border border-border flex items-center justify-center text-lg">{icon}</div>
+      </div>
+      <div className="text-3xl font-black text-gradient-luxe tabular-nums">{value}</div>
+      <div className="text-xs text-muted-foreground mt-1">{unit}</div>
+    </div>
+  );
+}
+
+function FloatingCoins() {
+  const coins = ["💎", "🪙", "💰", "✨", "💧", "🌟"];
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {coins.map((c, i) => (
+        <div
+          key={i}
+          className="absolute text-3xl md:text-4xl opacity-40 animate-float"
+          style={{
+            left: `${(i * 17 + 6) % 95}%`,
+            top: `${(i * 23 + 10) % 80}%`,
+            animationDelay: `${i * 0.7}s`,
+            animationDuration: `${5 + (i % 4)}s`,
+          }}
+        >{c}</div>
+      ))}
+    </div>
+  );
+}
+
+function Faucet3DUnused() {
   return (
     <div className="relative inline-block" style={{ perspective: "1000px" }}>
       <div className="relative h-32 w-32 mx-auto" style={{ transformStyle: "preserve-3d", transform: "rotateX(15deg) rotateY(-10deg)" }}>
