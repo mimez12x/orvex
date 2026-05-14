@@ -341,7 +341,19 @@ function Field({ label, token, onChange, amount, setAmount, balance, exclude }: 
         <span className="truncate text-right">
           Balance: {fmt(balance, token.decimals)}{" "}
           {balance !== undefined && balance > 0n && (
-            <button onClick={() => setAmount(fmt(balance, token.decimals, 18))} className="text-accent hover:underline ml-1">MAX</button>
+            <button
+              onClick={() => {
+                // For native zkLTC keep ~0.01 for gas to avoid reverts
+                if (token.isNative) {
+                  const reserve = 10_000_000_000_000_000n; // 0.01
+                  const usable = balance > reserve ? balance - reserve : 0n;
+                  setAmount(fmt(usable, token.decimals, 18));
+                } else {
+                  setAmount(fmt(balance, token.decimals, 18));
+                }
+              }}
+              className="text-accent hover:underline ml-1"
+            >MAX</button>
           )}
         </span>
       </div>
