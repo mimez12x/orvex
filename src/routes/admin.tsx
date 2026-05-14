@@ -9,7 +9,13 @@ import { useToast } from "@/components/ui/toaster";
 
 export const Route = createFileRoute("/admin")({
   component: AdminPage,
-  head: () => ({ meta: [{ title: "Admin — ORVEX" }] }),
+  head: () => ({
+    meta: [
+      { title: "Admin — ORVEX" },
+      { name: "description", content: "Internal admin panel for ORVEX protocol operators." },
+      { name: "robots", content: "noindex, nofollow" },
+    ],
+  }),
 });
 
 function AdminPage() {

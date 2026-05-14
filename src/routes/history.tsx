@@ -10,8 +10,15 @@ export const Route = createFileRoute("/history")({
   head: () => ({
     meta: [
       { title: "History — ORVEX" },
-      { name: "description", content: "Riwayat transaksi swap, liquidity & approve di ORVEX." },
+      { name: "description", content: "Your ORVEX transaction history: swaps, liquidity events, approvals, and wraps with on-chain links." },
+      { property: "og:title", content: "History — ORVEX" },
+      { property: "og:description", content: "Your ORVEX transaction history: swaps, liquidity events, approvals, and wraps with on-chain links." },
+      { property: "og:url", content: "https://orvexdex12.lovable.app/history" },
+      { name: "twitter:title", content: "History — ORVEX" },
+      { name: "twitter:description", content: "Your ORVEX transaction history: swaps, liquidity events, approvals, and wraps with on-chain links." },
+      { name: "robots", content: "noindex" },
     ],
+    links: [{ rel: "canonical", href: "https://orvexdex12.lovable.app/history" }],
   }),
 });
 
@@ -66,6 +73,7 @@ function HistoryPage() {
         </div>
       ) : (
         <>
+          <h2 className="sr-only">Filters</h2>
           <div className="flex flex-wrap items-center gap-2 mb-4 animate-rise">
             <div className="flex gap-1 bg-surface-2 rounded-xl p-1">
               <button
@@ -87,6 +95,7 @@ function HistoryPage() {
 
           {tab === "local" ? (
             <>
+              <h2 className="sr-only">Transaction list</h2>
               <div className="flex flex-wrap gap-2 mb-4">
                 {([
                   { k: "all", l: "All" },

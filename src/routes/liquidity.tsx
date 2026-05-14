@@ -16,7 +16,18 @@ type LiqSearch = { a?: string; b?: string; tab?: "add" | "remove" };
 
 export const Route = createFileRoute("/liquidity")({
   component: LiquidityPage,
-  head: () => ({ meta: [{ title: "Liquidity — ORVEX" }] }),
+  head: () => ({
+    meta: [
+      { title: "Liquidity — ORVEX" },
+      { name: "description", content: "Add or remove liquidity on ORVEX AMM pools. Earn LP fees from every swap on LitVM LiteForge." },
+      { property: "og:title", content: "Liquidity — ORVEX" },
+      { property: "og:description", content: "Add or remove liquidity on ORVEX AMM pools. Earn LP fees from every swap on LitVM LiteForge." },
+      { property: "og:url", content: "https://orvexdex12.lovable.app/liquidity" },
+      { name: "twitter:title", content: "Liquidity — ORVEX" },
+      { name: "twitter:description", content: "Add or remove liquidity on ORVEX AMM pools. Earn LP fees from every swap on LitVM LiteForge." },
+    ],
+    links: [{ rel: "canonical", href: "https://orvexdex12.lovable.app/liquidity" }],
+  }),
   validateSearch: (s: Record<string, unknown>): LiqSearch => ({
     a: typeof s.a === "string" ? s.a : undefined,
     b: typeof s.b === "string" ? s.b : undefined,
