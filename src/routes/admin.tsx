@@ -11,7 +11,7 @@ import { formatUnits, parseUnits } from "viem";
 import { ADDR, explorerAddr } from "@/lib/chain";
 import { faucetAbi } from "@/lib/abis/faucet";
 import { erc20Abi } from "@/lib/abis/wzkltc";
-import { FAUCET_TOKENS, type Token } from "@/lib/tokens";
+import { FAUCET_TOKENS, WZKLTC, type Token } from "@/lib/tokens";
 import { useToast } from "@/components/ui/toaster";
 
 export const Route = createFileRoute("/admin")({
@@ -24,6 +24,13 @@ export const Route = createFileRoute("/admin")({
     ],
   }),
 });
+
+// Admin manages every faucet slot (index 0 wzkLTC + 1..6 ERC20s), even if
+// user-facing /faucet hides the wrapper.
+const ADMIN_TOKENS: Token[] = [
+  { ...WZKLTC, faucetIndex: 0 },
+  ...FAUCET_TOKENS,
+];
 
 function fmt(n: bigint | undefined, decimals = 18, max = 4) {
   if (n === undefined) return "—";
@@ -66,10 +73,12 @@ function AdminPage() {
 
       <CooldownCard current={cooldown.data as bigint | undefined} disabled={!isOwner} />
 
+      <BulkOpsCard adminAddress={address} disabled={!isOwner} />
+
       <section className="space-y-3">
         <h2 className="font-semibold text-lg">Tokens</h2>
         <div className="space-y-3">
-          {FAUCET_TOKENS.map((t) => (
+          {ADMIN_TOKENS.map((t) => (
             <TokenRow key={t.address} token={t} adminAddress={address} disabled={!isOwner} />
           ))}
         </div>
