@@ -276,8 +276,8 @@ function LPRow({ pair, balance, t0, t1, valueWzk, sharePct, vol24Wzk, swaps24, u
       <div className="flex items-start justify-between gap-3 flex-wrap">
         <div className="flex items-center gap-3 min-w-0">
           <div className="flex -space-x-2 shrink-0">
-            {tk0 && <img src={tk0.logo} className="h-9 w-9 rounded-full ring-2 ring-background" />}
-            {tk1 && <img src={tk1.logo} className="h-9 w-9 rounded-full ring-2 ring-background" />}
+            {tk0 && <img src={tk0.logo} alt={`${tk0.symbol} token logo`} className="h-9 w-9 rounded-full ring-2 ring-background" />}
+            {tk1 && <img src={tk1.logo} alt={`${tk1.symbol} token logo`} className="h-9 w-9 rounded-full ring-2 ring-background" />}
           </div>
           <div className="min-w-0">
             <div className="font-semibold flex items-center gap-2 flex-wrap">
