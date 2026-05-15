@@ -75,6 +75,8 @@ function AdminPage() {
 
       <BulkOpsCard adminAddress={address} disabled={!isOwner} />
 
+      <BulkConfigCard disabled={!isOwner} />
+
       <section className="space-y-3">
         <h2 className="font-semibold text-lg">Tokens</h2>
         <div className="space-y-3">
