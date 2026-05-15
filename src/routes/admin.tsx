@@ -8,7 +8,7 @@ import {
   useWaitForTransactionReceipt,
 } from "wagmi";
 import { formatUnits, parseUnits } from "viem";
-import { ADDR, explorerAddr } from "@/lib/chain";
+import { ADDR, explorerAddr, litvm } from "@/lib/chain";
 import { faucetAbi } from "@/lib/abis/faucet";
 import { erc20Abi } from "@/lib/abis/wzkltc";
 import { FAUCET_TOKENS, WZKLTC, type Token } from "@/lib/tokens";
@@ -115,7 +115,9 @@ function useTxRunner(label: string) {
   }, [receipt.isSuccess]);
   const run = async (args: Parameters<typeof writeContractAsync>[0], title?: string) => {
     try {
-      const h = await writeContractAsync(args);
+      // Force chainId so wagmi prompts wallet to switch network if needed,
+      // and so the wallet popup actually appears on LitVM LiteForge.
+      const h = await writeContractAsync({ chainId: litvm.id, ...args });
       setHash(h);
       toast.push({ title: title ?? `${label} submitted`, hash: h });
       return h;
