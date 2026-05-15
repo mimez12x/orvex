@@ -8,7 +8,7 @@ import {
   useWaitForTransactionReceipt,
 } from "wagmi";
 import { formatUnits, parseUnits } from "viem";
-import { ADDR, explorerAddr } from "@/lib/chain";
+import { ADDR, explorerAddr, litvm } from "@/lib/chain";
 import { faucetAbi } from "@/lib/abis/faucet";
 import { erc20Abi } from "@/lib/abis/wzkltc";
 import { FAUCET_TOKENS, WZKLTC, type Token } from "@/lib/tokens";
@@ -115,7 +115,9 @@ function useTxRunner(label: string) {
   }, [receipt.isSuccess]);
   const run = async (args: Parameters<typeof writeContractAsync>[0], title?: string) => {
     try {
-      const h = await writeContractAsync(args);
+      // Force chainId so wagmi prompts wallet to switch network if needed,
+      // and so the wallet popup actually appears on LitVM LiteForge.
+      const h = await writeContractAsync({ chainId: litvm.id, ...args });
       setHash(h);
       toast.push({ title: title ?? `${label} submitted`, hash: h });
       return h;
@@ -216,7 +218,7 @@ function TokenRow({ token, adminAddress, disabled }: { token: Token; adminAddres
   const [withdrawVal, setWithdrawVal] = useState("");
   const [withdrawTo, setWithdrawTo] = useState("");
   const [newAddr, setNewAddr] = useState("");
-  const [showAdvanced, setShowAdvanced] = useState(false);
+  const [showAdvanced, setShowAdvanced] = useState(true);
 
   useEffect(() => {
     if (claimAmount !== undefined && claimVal === "") setClaimVal(formatUnits(claimAmount, dec));
@@ -511,7 +513,7 @@ function BulkConfigCard({ disabled }: { disabled?: boolean }) {
             const v = parseUnits(cRaw as `${number}`, t.decimals);
             if (v !== curClaim) {
               append(`→ ${t.symbol}: setClaimAmount ${cRaw}`);
-              const h = await writeContractAsync({ address: ADDR.faucet, abi: faucetAbi, functionName: "setClaimAmount", args: [t.faucetIndex!, v] });
+              const h = await writeContractAsync({ chainId: litvm.id, address: ADDR.faucet, abi: faucetAbi, functionName: "setClaimAmount", args: [t.faucetIndex!, v] });
               append(`✓ ${t.symbol} claim (${h.slice(0, 10)}…)`);
             }
           } catch (e: any) {
@@ -524,7 +526,7 @@ function BulkConfigCard({ disabled }: { disabled?: boolean }) {
             const v = BigInt(mRaw);
             if (v !== curMax) {
               append(`→ ${t.symbol}: setMaxClaims ${mRaw}`);
-              const h = await writeContractAsync({ address: ADDR.faucet, abi: faucetAbi, functionName: "setMaxClaims", args: [t.faucetIndex!, v] });
+              const h = await writeContractAsync({ chainId: litvm.id, address: ADDR.faucet, abi: faucetAbi, functionName: "setMaxClaims", args: [t.faucetIndex!, v] });
               append(`✓ ${t.symbol} max (${h.slice(0, 10)}…)`);
             }
           } catch (e: any) {
@@ -676,11 +678,11 @@ function BulkOpsCard({ adminAddress, disabled }: { adminAddress?: string; disabl
         try {
           if (allow < amt) {
             append(`→ ${t.symbol}: approving ${raw}…`);
-            const h = await writeContractAsync({ address: t.address, abi: erc20Abi, functionName: "approve", args: [ADDR.faucet, amt] });
+            const h = await writeContractAsync({ chainId: litvm.id, address: t.address, abi: erc20Abi, functionName: "approve", args: [ADDR.faucet, amt] });
             append(`  approve tx ${h.slice(0, 10)}…`);
           }
           append(`→ ${t.symbol}: refilling ${raw}…`);
-          const h = await writeContractAsync({ address: ADDR.faucet, abi: faucetAbi, functionName: "refill", args: [t.faucetIndex!, amt] });
+          const h = await writeContractAsync({ chainId: litvm.id, address: ADDR.faucet, abi: faucetAbi, functionName: "refill", args: [t.faucetIndex!, amt] });
           append(`✓ ${t.symbol} refilled (${h.slice(0, 10)}…)`);
         } catch (e: any) {
           append(`✗ ${t.symbol}: ${e?.shortMessage || e?.message || "failed"}`);
@@ -706,7 +708,7 @@ function BulkOpsCard({ adminAddress, disabled }: { adminAddress?: string; disabl
         if (bal === 0n) { append(`· ${t.symbol}: empty, skip`); continue; }
         try {
           append(`→ ${t.symbol}: withdraw ${fmt(bal, t.decimals)}…`);
-          const h = await writeContractAsync({ address: ADDR.faucet, abi: faucetAbi, functionName: "adminWithdraw", args: [t.faucetIndex!, bal, adminAddress as `0x${string}`] });
+          const h = await writeContractAsync({ chainId: litvm.id, address: ADDR.faucet, abi: faucetAbi, functionName: "adminWithdraw", args: [t.faucetIndex!, bal, adminAddress as `0x${string}`] });
           append(`✓ ${t.symbol} withdrawn (${h.slice(0, 10)}…)`);
         } catch (e: any) {
           append(`✗ ${t.symbol}: ${e?.shortMessage || e?.message || "failed"}`);
