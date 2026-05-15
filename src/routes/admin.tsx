@@ -2,8 +2,10 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import {
   useAccount,
+  useChainId,
   useReadContract,
   useReadContracts,
+  useSwitchChain,
   useWriteContract,
   useWaitForTransactionReceipt,
 } from "wagmi";
@@ -100,8 +102,36 @@ function Row({ label, value }: { label: string; value: React.ReactNode }) {
   );
 }
 
+function useEnsureLitvmChain() {
+  const toast = useToast();
+  const { address } = useAccount();
+  const chainId = useChainId();
+  const { switchChainAsync } = useSwitchChain();
+
+  return async () => {
+    if (!address) {
+      toast.push({ title: "Connect wallet first", type: "error" });
+      return false;
+    }
+    if (chainId === litvm.id) return true;
+
+    try {
+      await switchChainAsync({ chainId: litvm.id });
+      return true;
+    } catch (e: any) {
+      toast.push({
+        title: "Switch network failed",
+        description: e?.shortMessage || e?.message || "Please switch your wallet to LitVM LiteForge",
+        type: "error",
+      });
+      return false;
+    }
+  };
+}
+
 function useTxRunner(label: string) {
   const toast = useToast();
+  const ensureLitvmChain = useEnsureLitvmChain();
   const { writeContractAsync, isPending, reset } = useWriteContract();
   const [hash, setHash] = useState<`0x${string}` | undefined>();
   const receipt = useWaitForTransactionReceipt({ hash });
@@ -115,9 +145,9 @@ function useTxRunner(label: string) {
   }, [receipt.isSuccess]);
   const run = async (args: Parameters<typeof writeContractAsync>[0], title?: string) => {
     try {
-      // Force chainId so wagmi prompts wallet to switch network if needed,
-      // and so the wallet popup actually appears on LitVM LiteForge.
-      const h = await writeContractAsync({ chainId: litvm.id, ...args });
+      const ready = await ensureLitvmChain();
+      if (!ready) return;
+      const h = await writeContractAsync(args);
       setHash(h);
       toast.push({ title: title ?? `${label} submitted`, hash: h });
       return h;
