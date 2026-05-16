@@ -15,11 +15,11 @@ export const Route = createFileRoute("/analytics")({
       { name: "description", content: "Statistik global ORVEX: TVL, volume 24h, top pools, dan distribusi likuiditas." },
       { property: "og:title", content: "Analytics — ORVEX" },
       { property: "og:description", content: "Statistik global ORVEX: TVL, volume 24h, top pools, dan distribusi likuiditas across LitVM AMM markets." },
-      { property: "og:url", content: "https://orvex-liteforge-exchange.lovable.app/analytics" },
+      { property: "og:url", content: "https://orvexdex.lovable.app/analytics" },
       { name: "twitter:title", content: "Analytics — ORVEX" },
       { name: "twitter:description", content: "Statistik global ORVEX: TVL, volume 24h, top pools, dan distribusi likuiditas across LitVM AMM markets." },
     ],
-    links: [{ rel: "canonical", href: "https://orvex-liteforge-exchange.lovable.app/analytics" }],
+    links: [{ rel: "canonical", href: "https://orvexdex.lovable.app/analytics" }],
   }),
 });
 
@@ -84,7 +84,7 @@ function AnalyticsPage() {
 
       <div className="animate-rise mb-6">
         <div className="text-[11px] tracking-[0.3em] uppercase text-gradient-gold font-semibold mb-2">Atelier · Insight</div>
-        <h1 className="text-4xl md:text-5xl font-extrabold text-gradient-luxe tracking-tight">Analytics</h1>
+        <h1 className="text-4xl md:text-5xl font-extrabold text-gradient-luxe tracking-tight">DEX Analytics</h1>
         <p className="text-sm text-muted-foreground mt-1">Live protocol metrics on LitVM · {total} pools</p>
       </div>
 
