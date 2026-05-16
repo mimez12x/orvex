@@ -6,10 +6,18 @@ import { erc20Abi } from "@/lib/abis/wzkltc";
 import { factoryAbi } from "@/lib/abis/factory";
 import { pairAbi } from "@/lib/abis/pair";
 import { fmt } from "@/lib/format";
-import { useMemo } from "react";
-import { ActivityFeed } from "@/components/ActivityFeed";
+import { lazy, Suspense, useMemo } from "react";
 import { usePoolStats, fmtWzk, type PoolMeta } from "@/lib/poolStats";
 import { findToken } from "@/lib/tokens";
+import {
+  ActivityFeedSkeleton,
+  LPositionsSkeleton,
+  PortfolioTokensSkeleton,
+} from "@/components/skeletons";
+
+const ActivityFeed = lazy(() =>
+  import("@/components/ActivityFeed").then((m) => ({ default: m.ActivityFeed })),
+);
 
 export const Route = createFileRoute("/portfolio")({
   component: PortfolioPage,
@@ -80,19 +88,25 @@ function PortfolioPage() {
       {isConnected && (
         <>
           <SectionHeader title="Tokens" subtitle="Live balances" />
-          <div className="grid sm:grid-cols-2 gap-3">
-            <TokenCard logo={TOKENS[0].logo} symbol="zkLTC" name="Native" balance={native.data?.value} decimals={18} />
-            {TOKENS.filter((t) => !t.isNative).map((t, i) => {
-              const b = balances.data?.[i]?.result as bigint | undefined;
-              return <TokenCard key={t.address + t.symbol} logo={t.logo} symbol={t.symbol} name={t.name} balance={b} decimals={t.decimals} address={t.address} />;
-            })}
-          </div>
+          {balances.isLoading && !balances.data ? (
+            <PortfolioTokensSkeleton count={6} />
+          ) : (
+            <div className="grid sm:grid-cols-2 gap-3">
+              <TokenCard logo={TOKENS[0].logo} symbol="zkLTC" name="Native" balance={native.data?.value} decimals={18} />
+              {TOKENS.filter((t) => !t.isNative).map((t, i) => {
+                const b = balances.data?.[i]?.result as bigint | undefined;
+                return <TokenCard key={t.address + t.symbol} logo={t.logo} symbol={t.symbol} name={t.name} balance={b} decimals={t.decimals} address={t.address} />;
+              })}
+            </div>
+          )}
 
           <SectionHeader title="LP Positions" subtitle="Underlying assets · live" className="mt-10" />
           <LPositions owner={address!} />
 
           <SectionHeader title="Recent Activity" subtitle="Streamed from LitVM logs" className="mt-10" />
-          <ActivityFeed owner={address!} />
+          <Suspense fallback={<ActivityFeedSkeleton rows={5} />}>
+            <ActivityFeed owner={address!} />
+          </Suspense>
         </>
       )}
     </div>
