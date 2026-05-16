@@ -387,3 +387,33 @@ function FeaturedCard({ title, subtitle, cta, to, accent, delay }: { title: stri
     </div>
   );
 }
+
+function StatTile({
+  label, value, suffix, hint, loading, accent,
+}: {
+  label: string;
+  value: string;
+  suffix?: string;
+  hint?: string;
+  loading?: boolean;
+  accent: "violet" | "cyan" | "gold";
+}) {
+  const dot = accent === "violet"
+    ? "bg-[oklch(0.65_0.27_295)]"
+    : accent === "cyan"
+    ? "bg-[oklch(0.78_0.18_220)]"
+    : "bg-[oklch(0.84_0.16_85)]";
+  return (
+    <div className="rounded-2xl p-4 glass-strong border-gold card-hover">
+      <div className="flex items-center justify-between">
+        <div className="text-[10px] tracking-[0.22em] uppercase text-muted-foreground">{label}</div>
+        <span className={`h-1.5 w-1.5 rounded-full ${dot} shadow-[0_0_10px_currentColor] animate-pulse-glow`} />
+      </div>
+      <div className="mt-2 text-2xl font-extrabold text-gradient-luxe">
+        {loading ? <span className="inline-block h-6 w-16 rounded bg-surface-2 animate-pulse" /> : value}
+        {!loading && suffix && <span className="ml-1 text-xs text-muted-foreground font-bold">{suffix}</span>}
+      </div>
+      {hint && <div className="text-[10px] text-muted-foreground mt-1">{hint}</div>}
+    </div>
+  );
+}
