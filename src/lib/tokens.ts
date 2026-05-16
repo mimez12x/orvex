@@ -31,6 +31,7 @@ export const WZKLTC: Token = {
   decimals: 18,
   logo: LTC_LOGO,
   isWrapped: true,
+  faucetIndex: 0,
 };
 
 // faucetIndex aligns with Faucet.tokens(uint8) ordering.
@@ -38,7 +39,6 @@ export const WZKLTC: Token = {
 export const TOKENS: Token[] = [
   NATIVE,
   WZKLTC,
-  { ...WZKLTC, faucetIndex: 0 },
   { address: ADDR.TRX, symbol: "TRX", name: "TRON", decimals: 18, logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png", faucetIndex: 1 },
   { address: ADDR.XRP, symbol: "XRP", name: "XRP", decimals: 18, logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/52.png", faucetIndex: 2 },
   { address: ADDR.ADA, symbol: "ADA", name: "Cardano", decimals: 18, logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/2010.png", faucetIndex: 3 },
