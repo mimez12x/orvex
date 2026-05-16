@@ -10,6 +10,7 @@ import { TOKENS } from "@/lib/tokens";
 import { WalletModal } from "@/components/wallet/ConnectButton";
 import { findToken } from "@/lib/tokens";
 import { usePoolStats, fmtWzk, type PoolMeta } from "@/lib/poolStats";
+import { useDexStats } from "@/lib/dexStats";
 import { BrandMark } from "@/components/brand/BrandMark";
 
 export const Route = createFileRoute("/")({
@@ -78,6 +79,8 @@ function Landing() {
   }), [pairAddrs, metaQ.data]);
   const stats = usePoolStats(poolMetas);
   const prices = stats.data?.prices;
+  const dex = useDexStats(poolMetas);
+  const dexLoading = dex.isLoading || metaQ.isLoading || pairsQ.isLoading;
 
   // Native balance
   const nativeBal = useBalance({ address, query: { enabled: !!address } });
@@ -255,6 +258,29 @@ function Landing() {
               <div className="mt-3 flex items-center justify-between text-[10px] text-muted-foreground">
                 <span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>Now</span>
               </div>
+            </div>
+          </div>
+
+          {/* ON-CHAIN DEX STATS */}
+          <div className="relative px-6 sm:px-10 lg:px-14 pb-10">
+            <div className="flex items-end justify-between mb-4">
+              <div>
+                <h2 className="text-xl font-bold">Live On-chain Metrics</h2>
+                <p className="text-xs text-muted-foreground mt-1">
+                  Aggregated directly from LitVM logs · refreshes every 60s
+                </p>
+              </div>
+              <span className="text-[10px] tracking-[0.2em] uppercase px-2 py-1 rounded-full glass-strong border-gold">
+                {dexLoading ? "Syncing…" : "Live"}
+              </span>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+              <StatTile label="Pools" value={dex.data ? String(dex.data.pools) : (total ? String(total) : "—")} loading={dexLoading} accent="violet" />
+              <StatTile label="Volume 24h" value={dex.data ? `${fmtWzk(dex.data.volume24hWzk, 2)}` : "—"} suffix="wzk" loading={dexLoading} accent="gold" />
+              <StatTile label="Swaps 24h" value={dex.data ? dex.data.txs24h.toLocaleString() : "—"} loading={dexLoading} accent="cyan" />
+              <StatTile label="Unique Wallets" value={dex.data ? dex.data.uniqueWallets.toLocaleString() : "—"} hint="~24h window" loading={dexLoading} accent="violet" />
+              <StatTile label="Active (1h)" value={dex.data ? dex.data.activeWallets1h.toLocaleString() : "—"} hint="last ~1h" loading={dexLoading} accent="cyan" />
+              <StatTile label="TVL" value={dex.data ? fmtWzk(dex.data.tvlWzk, 2) : "—"} suffix="wzk" loading={dexLoading} accent="gold" />
             </div>
           </div>
 
