@@ -234,6 +234,9 @@ function LPositions({ owner }: { owner: `0x${string}` }) {
   });
 
   if (positions.length === 0) {
+    if (pairs.isLoading || (pairAddrs.length > 0 && bals.isLoading)) {
+      return <LPositionsSkeleton count={2} />;
+    }
     return <div className="glass rounded-2xl p-8 text-center text-muted-foreground text-sm">No LP positions yet.</div>;
   }
 
