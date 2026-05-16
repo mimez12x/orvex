@@ -14,7 +14,6 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as PoolsRouteImport } from './routes/pools'
 import { Route as LiquidityRouteImport } from './routes/liquidity'
-import { Route as HistoryRouteImport } from './routes/history'
 import { Route as FaucetRouteImport } from './routes/faucet'
 import { Route as BrandRouteImport } from './routes/brand'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
@@ -44,11 +43,6 @@ const PoolsRoute = PoolsRouteImport.update({
 const LiquidityRoute = LiquidityRouteImport.update({
   id: '/liquidity',
   path: '/liquidity',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const HistoryRoute = HistoryRouteImport.update({
-  id: '/history',
-  path: '/history',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FaucetRoute = FaucetRouteImport.update({
@@ -83,7 +77,6 @@ export interface FileRoutesByFullPath {
   '/analytics': typeof AnalyticsRoute
   '/brand': typeof BrandRoute
   '/faucet': typeof FaucetRoute
-  '/history': typeof HistoryRoute
   '/liquidity': typeof LiquidityRoute
   '/pools': typeof PoolsRoute
   '/portfolio': typeof PortfolioRoute
@@ -96,7 +89,6 @@ export interface FileRoutesByTo {
   '/analytics': typeof AnalyticsRoute
   '/brand': typeof BrandRoute
   '/faucet': typeof FaucetRoute
-  '/history': typeof HistoryRoute
   '/liquidity': typeof LiquidityRoute
   '/pools': typeof PoolsRoute
   '/portfolio': typeof PortfolioRoute
@@ -110,7 +102,6 @@ export interface FileRoutesById {
   '/analytics': typeof AnalyticsRoute
   '/brand': typeof BrandRoute
   '/faucet': typeof FaucetRoute
-  '/history': typeof HistoryRoute
   '/liquidity': typeof LiquidityRoute
   '/pools': typeof PoolsRoute
   '/portfolio': typeof PortfolioRoute
@@ -125,7 +116,6 @@ export interface FileRouteTypes {
     | '/analytics'
     | '/brand'
     | '/faucet'
-    | '/history'
     | '/liquidity'
     | '/pools'
     | '/portfolio'
@@ -138,7 +128,6 @@ export interface FileRouteTypes {
     | '/analytics'
     | '/brand'
     | '/faucet'
-    | '/history'
     | '/liquidity'
     | '/pools'
     | '/portfolio'
@@ -151,7 +140,6 @@ export interface FileRouteTypes {
     | '/analytics'
     | '/brand'
     | '/faucet'
-    | '/history'
     | '/liquidity'
     | '/pools'
     | '/portfolio'
@@ -165,7 +153,6 @@ export interface RootRouteChildren {
   AnalyticsRoute: typeof AnalyticsRoute
   BrandRoute: typeof BrandRoute
   FaucetRoute: typeof FaucetRoute
-  HistoryRoute: typeof HistoryRoute
   LiquidityRoute: typeof LiquidityRoute
   PoolsRoute: typeof PoolsRoute
   PortfolioRoute: typeof PortfolioRoute
@@ -208,13 +195,6 @@ declare module '@tanstack/react-router' {
       path: '/liquidity'
       fullPath: '/liquidity'
       preLoaderRoute: typeof LiquidityRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/history': {
-      id: '/history'
-      path: '/history'
-      fullPath: '/history'
-      preLoaderRoute: typeof HistoryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/faucet': {
@@ -261,7 +241,6 @@ const rootRouteChildren: RootRouteChildren = {
   AnalyticsRoute: AnalyticsRoute,
   BrandRoute: BrandRoute,
   FaucetRoute: FaucetRoute,
-  HistoryRoute: HistoryRoute,
   LiquidityRoute: LiquidityRoute,
   PoolsRoute: PoolsRoute,
   PortfolioRoute: PortfolioRoute,

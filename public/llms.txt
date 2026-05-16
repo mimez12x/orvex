@@ -11,4 +11,3 @@
 - [Analytics](/analytics): Global ORVEX statistics — TVL, volume 24h, top pools, liquidity distribution.
 - [Portfolio](/portfolio): Your live token balances, LP positions, and recent on-chain activity.
 - [Faucet](/faucet): Claim free LitVM testnet tokens (captcha-protected, one claim per cooldown cycle).
-- [History](/history): Your ORVEX transaction history with on-chain explorer links.
