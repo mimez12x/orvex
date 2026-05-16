@@ -240,3 +240,21 @@
     opacity: 0.7;
   }
 }
+
+@layer base {
+  html { scroll-behavior: smooth; }
+  body {
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+  img, svg, video { content-visibility: auto; }
+}
