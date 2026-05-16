@@ -8,12 +8,19 @@ import { fmt } from "@/lib/format";
 import { useEffect, useMemo, useState } from "react";
 import { usePoolStats, fmtWzk, type PoolMeta } from "@/lib/poolStats";
 import { useToast } from "@/components/ui/toaster";
+import { PoolGridSkeleton, PoolStatsSkeleton } from "@/components/skeletons";
 
 type SortKey = "tvl" | "supply" | "new" | "vol";
 type Filter = "all" | "stable" | "blue" | "high" | "mine";
 
 export const Route = createFileRoute("/pools")({
   component: PoolsPage,
+  pendingComponent: () => (
+    <div className="max-w-7xl mx-auto px-4 py-10">
+      <PoolStatsSkeleton />
+      <PoolGridSkeleton count={8} />
+    </div>
+  ),
   head: () => ({
     meta: [
       { title: "Pools — ORVEX" },
@@ -73,6 +80,7 @@ function PoolsPage() {
         setSort={setSort}
         setFilter={setFilter}
         total={total}
+        isLoading={len.isLoading || pairs.isLoading}
       />
 
       <CreatePairCard />
@@ -81,10 +89,11 @@ function PoolsPage() {
 }
 
 function PoolList({
-  pairAddrs, q, sort, filter, setQ, setSort, setFilter, total,
+  pairAddrs, q, sort, filter, setQ, setSort, setFilter, total, isLoading,
 }: {
   pairAddrs: `0x${string}`[]; q: string; sort: SortKey; filter: Filter;
   setQ: (v: string) => void; setSort: (s: SortKey) => void; setFilter: (f: Filter) => void; total: number;
+  isLoading?: boolean;
 }) {
   const { address } = useAccount();
 
@@ -172,17 +181,23 @@ function PoolList({
   const totalSwaps = enriched.reduce<number>((a, p) => a + p.swaps, 0);
   const totalFees = (totalVol * 3n) / 1000n; // 0.3% fee tier
   const trending = [...enriched].sort((a, b) => (a.vol < b.vol ? 1 : -1)).slice(0, 6);
+  const metaLoading = pairAddrs.length > 0 && meta.isLoading && !meta.data;
+  const showInitialSkeleton = !!isLoading && pairAddrs.length === 0 && total === 0;
 
   return (
     <>
       {/* Top stats row */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-5 animate-rise">
-        <BigStat label="Total Value Locked" value={fmtWzk(totalTvl)} unit="wzkLTC" tone="violet" />
-        <BigStat label="Avg Fee Tier" value="0.30%" unit="per swap" tone="cyan" />
-        <BigStat label="24h Volume" value={fmtWzk(totalVol)} unit="wzkLTC" tone="cyan" />
-        <BigStat label="Total Fees (24h)" value={fmtWzk(totalFees)} unit="wzkLTC" tone="gold" />
-        <BigStat label="Total Pools" value={String(total)} unit="live" tone="violet" />
-      </div>
+      {showInitialSkeleton ? (
+        <PoolStatsSkeleton />
+      ) : (
+        <div className="grid grid-cols-2 md:grid-cols-5 gap-3 mb-5 animate-rise">
+          <BigStat label="Total Value Locked" value={fmtWzk(totalTvl)} unit="wzkLTC" tone="violet" />
+          <BigStat label="Avg Fee Tier" value="0.30%" unit="per swap" tone="cyan" />
+          <BigStat label="24h Volume" value={fmtWzk(totalVol)} unit="wzkLTC" tone="cyan" />
+          <BigStat label="Total Fees (24h)" value={fmtWzk(totalFees)} unit="wzkLTC" tone="gold" />
+          <BigStat label="Total Pools" value={String(total)} unit="live" tone="violet" />
+        </div>
+      )}
 
       {/* Filter / Control bar */}
       <div className="glass rounded-2xl p-4 mb-5 flex flex-wrap items-center gap-3 animate-rise" style={{ animationDelay: "60ms" }}>
@@ -233,7 +248,9 @@ function PoolList({
         ))}
       </div>
 
-      {pairAddrs.length === 0 ? (
+      {showInitialSkeleton || metaLoading ? (
+        <PoolGridSkeleton count={8} />
+      ) : pairAddrs.length === 0 ? (
         <div className="glass rounded-2xl p-10 text-center text-muted-foreground mb-8">
           No pools yet. <Link to="/liquidity" className="text-accent hover:underline">Be the first to add liquidity →</Link>
         </div>
