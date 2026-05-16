@@ -38,6 +38,7 @@ export const WZKLTC: Token = {
 export const TOKENS: Token[] = [
   NATIVE,
   WZKLTC,
+  { ...WZKLTC, faucetIndex: 0 },
   { address: ADDR.TRX, symbol: "TRX", name: "TRON", decimals: 18, logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/1958.png", faucetIndex: 1 },
   { address: ADDR.XRP, symbol: "XRP", name: "XRP", decimals: 18, logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/52.png", faucetIndex: 2 },
   { address: ADDR.ADA, symbol: "ADA", name: "Cardano", decimals: 18, logo: "https://s2.coinmarketcap.com/static/img/coins/64x64/2010.png", faucetIndex: 3 },
@@ -46,10 +47,9 @@ export const TOKENS: Token[] = [
   { address: ADDR.ORVX, symbol: "ORVX", name: "Orvex", decimals: 18, logo: orvxLogo, faucetIndex: 6 },
 ];
 
-// Faucet token list (matches contract index ordering, excludes wzkLTC).
-// Users get native zkLTC from the network bridge, so the wrapper isn't shown.
+// Faucet token list (matches contract index ordering).
 export const FAUCET_TOKENS: Token[] = TOKENS
-  .filter((t) => t.faucetIndex !== undefined && t.faucetIndex !== 0)
+  .filter((t) => t.faucetIndex !== undefined)
   .sort((a, b) => (a.faucetIndex ?? 0) - (b.faucetIndex ?? 0));
 
 export const findToken = (addr: string) =>
