@@ -81,8 +81,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:type", content: "website" },
       { property: "og:site_name", content: "ORVEX" },
       { name: "twitter:card", content: "summary" },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/085fc2b9-9903-4fbc-bef4-e361ecdf97ee/id-preview-1b761e6e--cc567977-7c47-45a1-b4a8-9e856ac9cde0.lovable.app-1778241217647.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/085fc2b9-9903-4fbc-bef4-e361ecdf97ee/id-preview-1b761e6e--cc567977-7c47-45a1-b4a8-9e856ac9cde0.lovable.app-1778241217647.png" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/92INgNvHZYbXuoglAr06eF9gJKs2/social-images/social-1778910309431-ChatGPT_Image_7_Mei_2026,_00.42.39.webp" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/92INgNvHZYbXuoglAr06eF9gJKs2/social-images/social-1778910309431-ChatGPT_Image_7_Mei_2026,_00.42.39.webp" },
+      { title: "Lovable App" },
+      { property: "og:title", content: "Lovable App" },
+      { name: "twitter:title", content: "Lovable App" },
+      { name: "description", content: "ORVEX is a decentralized exchange on LitVM LiteForge Testnet for seamless token swaps and liquidity management." },
+      { property: "og:description", content: "ORVEX is a decentralized exchange on LitVM LiteForge Testnet for seamless token swaps and liquidity management." },
+      { name: "twitter:description", content: "ORVEX is a decentralized exchange on LitVM LiteForge Testnet for seamless token swaps and liquidity management." },
     ],
     links: [
       {
