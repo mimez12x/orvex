@@ -12,12 +12,12 @@ export const Route = createFileRoute("/faucet")({
   head: () => ({
     meta: [
       { title: "Faucet — ORVEX" },
-      { name: "description", content: "Claim free LitVM testnet tokens to try ORVEX. Captcha-protected, one claim per cycle." },
+      { name: "description", content: "Claim free LitVM testnet tokens to try ORVEX. On-chain cooldown and per-user claim limits." },
       { property: "og:title", content: "Faucet — ORVEX" },
-      { property: "og:description", content: "Claim free LitVM testnet tokens to try ORVEX. Captcha-protected, one claim per cycle." },
+      { property: "og:description", content: "Claim free LitVM testnet tokens to try ORVEX. On-chain cooldown and per-user claim limits." },
       { property: "og:url", content: "https://orvexdex.lovable.app/faucet" },
       { name: "twitter:title", content: "Faucet — ORVEX" },
-      { name: "twitter:description", content: "Claim free LitVM testnet tokens to try ORVEX. Captcha-protected, one claim per cycle." },
+      { name: "twitter:description", content: "Claim free LitVM testnet tokens to try ORVEX. On-chain cooldown and per-user claim limits." },
     ],
     links: [{ rel: "canonical", href: "https://orvexdex.lovable.app/faucet" }],
   }),
