@@ -10,27 +10,27 @@
 
 ---
 
-## Tentang ORVEX
+## About ORVEX
 
-ORVEX adalah **Automated Market Maker (AMM)** berbasis fork UniswapV2 yang dirancang khusus untuk ekosistem **LitVM LiteForge** — zk-rollup ringan dengan native token `zkLTC`. ORVEX menggabungkan **kontrak yang sudah teruji** (UniswapV2 Factory + Router02) dengan **antarmuka premium dark-neon** yang fokus pada kecepatan, transparansi, dan UX kelas institusional.
+ORVEX is an **Automated Market Maker (AMM)** based on a UniswapV2 fork, specifically designed for the **LitVM LiteForge** ecosystem — a lightweight zk-rollup with the native token `zkLTC`. ORVEX combines **battle-tested contracts** (UniswapV2 Factory + Router02) with a **premium dark-neon interface** focused on speed, transparency, and institutional-grade UX.
 
-Setiap aksi — swap, wrap/unwrap, add/remove liquidity, faucet claim — dieksekusi sebagai transaksi nyata di on-chain LitVM dan ditandatangani oleh dompet pengguna. **Tidak ada simulasi, tidak ada custodial layer, tidak ada off-chain order book.**
+Every action — swap, wrap/unwrap, add/remove liquidity, faucet claim — is executed as a real on-chain transaction on LitVM and signed by the user's wallet. **No simulations, no custodial layer, no off-chain order book.**
 
-## Masalah yang Diselesaikan ORVEX
+## Problems ORVEX Solves
 
-| Masalah di ekosistem testnet/zk-rollup | Solusi ORVEX |
+| Problem in the testnet/zk-rollup ecosystem | ORVEX Solution |
 |---|---|
-| Tidak ada venue likuiditas untuk aset native zk-rollup baru | AMM penuh dengan factory + router yang sudah ter-deploy |
-| Wrap/unwrap zkLTC manual lewat block explorer | Tombol **WRAP / UNWRAP** otomatis di halaman Swap |
-| Approval token berulang setiap interaksi | Smart approval — cek `allowance` dulu, hanya prompt jika perlu |
-| Sulit dapat token uji untuk testing dApp | Faucet on-chain multi-token dengan cooldown + per-user limit |
-| LP tidak punya dashboard untuk memantau posisi | Halaman Portfolio + Pools dengan Multicall batching |
-| UX dompet fragmentasi (MetaMask vs OKX vs Rabby vs Bitget) | Wallet picker EIP-6963 dengan auto add-network |
-| Tidak ada visibilitas TVL/volume jaringan | Halaman Analytics dengan agregasi on-chain real-time |
+| No liquidity venue for new zk-rollup native assets | Full AMM with factory + router already deployed |
+| Manual zkLTC wrap/unwrap via block explorer | **WRAP / UNWRAP** auto buttons on the Swap page |
+| Repeated token approval on every interaction | Smart approval — checks `allowance` first, only prompts when needed |
+| Hard to get test tokens for dApp testing | On-chain multi-token faucet with cooldown + per-user limit |
+| No dashboard for LPs to track positions | Portfolio + Pools pages with Multicall batching |
+| Wallet fragmentation UX (MetaMask vs OKX vs Rabby vs Bitget) | EIP-6963 wallet picker with auto add-network |
+| No visibility on network TVL/volume | Analytics page with real-time on-chain aggregation |
 
-## Teknologi
+## Technology
 
-### Smart Contracts (sudah deployed di LitVM LiteForge)
+### Smart Contracts (already deployed on LitVM LiteForge)
 - **UniswapV2 Factory** — `0x42e4E19020aa23947e1BE3260b7e4CCFDd246128`
 - **UniswapV2 Router02** — `0x03D2D542100fa926de135a08B609c8538E45F6ee`
 - **UniswapV2 Library** — `0x998AEFD25622eCB6D6Fb8eBE87B01dC930d712a0`
@@ -40,15 +40,15 @@ Setiap aksi — swap, wrap/unwrap, add/remove liquidity, faucet claim — diekse
 
 ### Frontend Stack
 - **React 19** + **TanStack Start v1** (SSR + file-based routing)
-- **Vite 7** build pipeline, deploy ke Cloudflare Workers (Edge)
-- **wagmi v2** + **viem** untuk on-chain interaction & signing
-- **@tanstack/react-query** untuk caching dan revalidation
-- **Tailwind CSS v4** dengan design tokens (OKLCH palette)
+- **Vite 7** build pipeline, deployed to Cloudflare Workers (Edge)
+- **wagmi v2** + **viem** for on-chain interaction & signing
+- **@tanstack/react-query** for caching and revalidation
+- **Tailwind CSS v4** with design tokens (OKLCH palette)
 - **shadcn/ui** + custom premium dark-neon components
 - **EIP-6963** wallet discovery (MetaMask, OKX, Rabby, Bitget)
-- **Multicall3** batching untuk reads yang efisien
+- **Multicall3** batching for efficient reads
 
-### Jaringan
+### Network
 | Field | Value |
 |---|---|
 | Chain Name | LitVM LiteForge Testnet |
@@ -57,9 +57,9 @@ Setiap aksi — swap, wrap/unwrap, add/remove liquidity, faucet claim — diekse
 | Explorer | `https://liteforge.explorer.caldera.xyz` |
 | Native Symbol | `zkLTC` |
 
-## Token yang Didukung
+## Supported Tokens
 
-| Logo | Symbol | Nama | Address |
+| Logo | Symbol | Name | Address |
 |---|---|---|---|
 | <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/2.png" width="24" /> | **zkLTC** | LitVM zkLTC (native) | — |
 | <img src="https://s2.coinmarketcap.com/static/img/coins/64x64/2.png" width="24" /> | **wzkLTC** | Wrapped zkLTC | `0x3A153e8BcDe02F4Cf6C5eeECD9c83bC0296FFbD3` |
@@ -73,39 +73,39 @@ Setiap aksi — swap, wrap/unwrap, add/remove liquidity, faucet claim — diekse
 ## Roadmap
 
 ### Phase 1 — Foundation ✅
-- Deploy UniswapV2 Factory, Router02, Library, Multicall3 ke LitVM LiteForge
-- Deploy WzkLTC (WETH9) untuk wrap/unwrap native token
-- Deploy 6 testnet ERC-20 (TRX, XRP, ADA, ZEC, XMR, ORVX)
-- Deploy multi-token Faucet dengan cooldown + max-claim per user
+- Deploy UniswapV2 Factory, Router02, Library, Multicall3 to LitVM LiteForge
+- Deploy WzkLTC (WETH9) for native token wrap/unwrap
+- Deploy 6 testnet ERC-20s (TRX, XRP, ADA, ZEC, XMR, ORVX)
+- Deploy multi-token Faucet with cooldown + max-claim per user
 
 ### Phase 2 — Core DEX UX ✅
 - TanStack Start scaffold + wagmi v2 + viem integration
 - Wallet picker EIP-6963 (MetaMask, OKX, Rabby, Bitget) + auto add-network
-- Swap engine dengan auto-routing WRAP / UNWRAP / SWAP
-- Add / Remove Liquidity dengan smart approval (cek allowance dulu)
+- Swap engine with auto-routing WRAP / UNWRAP / SWAP
+- Add / Remove Liquidity with smart approval (check allowance first)
 - Pools listing via Factory `allPairsLength` + Multicall reserves
 - Portfolio: token balances + LP positions via Multicall
-- Faucet UI dengan 3D animated drip card
+- Faucet UI with 3D animated drip card
 - Premium dark-neon design system (OKLCH tokens, gradient brand)
 
 ### Phase 3 — Polish & Discovery ✅
 - Analytics page: TVL, volume 24h, top pools, liquidity distribution
-- Admin panel untuk faucet owner (setToken, setClaimAmount, refill, dll)
+- Admin panel for faucet owner (setToken, setClaimAmount, refill, etc.)
 - Brand & Style Guide page (`/brand`)
 - Full SEO pipeline (sitemap.xml, robots.txt, llms.txt, canonical, OG/Twitter)
 - Activity Feed real-time on-chain events
 - Custom token import (per-user)
-- Dokumentasi lengkap (`/docs`)
+- Complete documentation (`/docs`)
 
 ### Phase 4 — Liquidity & Incentives (In Progress)
 - Liquidity Mining program (LP staking → ORVX rewards)
-- Trading competitions dengan leaderboard
-- Referral system on-chain
-- Boosted pools (multiplier untuk pasangan tertentu)
+- Trading competitions with leaderboard
+- On-chain referral system
+- Boosted pools (multiplier for specific pairs)
 - Limit orders (off-chain matching, on-chain settlement)
 
 ### Phase 5 — Advanced Trading
-- Multi-hop smart router (UI lebih dari 2 hop)
+- Multi-hop smart router (UI for more than 2 hops)
 - Concentrated Liquidity (UniswapV3-style pools)
 - Price chart per pool (TradingView lightweight charts)
 - Slippage protection & MEV-aware routing
@@ -114,23 +114,23 @@ Setiap aksi — swap, wrap/unwrap, add/remove liquidity, faucet claim — diekse
 ### Phase 6 — Governance & DAO
 - ORVX → veORVX vote-escrow model
 - On-chain governance (proposals + voting)
-- Treasury management dengan timelock
-- Fee switch (protocol fee ke veORVX holders)
-- Gauge weights untuk pengarahan liquidity mining
+- Treasury management with timelock
+- Fee switch (protocol fee to veORVX holders)
+- Gauge weights for liquidity mining direction
 
 ### Phase 7 — Multi-Chain & Mainnet
-- Audit kontrak (eksternal, public report)
+- Contract audit (external, public report)
 - Bug bounty program
-- Bridge native ke LitVM Mainnet
-- Deployment ke Mainnet LitVM
+- Native bridge to LitVM Mainnet
+- Deployment to LitVM Mainnet
 - Cross-rollup liquidity routing
 
 ### Phase 8 — Ecosystem
-- SDK publik (`@orvex/sdk`) untuk integrasi pihak ketiga
+- Public SDK (`@orvex/sdk`) for third-party integrations
 - Aggregator API (REST + GraphQL)
 - Mobile-first PWA + push notifications
-- Integrasi fiat on-ramp
-- Grants program untuk builders di atas ORVEX
+- Fiat on-ramp integration
+- Grants program for builders on top of ORVEX
 
 ## Development
 
