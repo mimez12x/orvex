@@ -8,8 +8,8 @@ import {
   useWaitForTransactionReceipt,
   useWatchContractEvent,
 } from "wagmi";
-import { formatEther, keccak256, parseEther, stringToBytes, toHex } from "viem";
-import { ADDR } from "@/lib/chain";
+import { createPublicClient, encodeAbiParameters, formatEther, http, keccak256, parseEther, stringToBytes, toHex } from "viem";
+import { ADDR, litvm } from "@/lib/chain";
 import { domainControllerAbi } from "@/lib/abis/domainController";
 import { baseRegistrarAbi } from "@/lib/abis/baseRegistrar";
 import { publicResolverAbi } from "@/lib/abis/publicResolver";
@@ -661,12 +661,8 @@ function DomainCard({
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Helper: panggil makeCommitment (pure) via JSON-RPC tanpa hook
-// (dipakai sekali sebelum tx commit). Memakai client publik dari window.ethereum
-// kalau ada — fallback ke hash lokal yang sama persis dengan kontrak.
+// (dipakai sekali sebelum tx commit). Fallback ke hash lokal jika RPC gagal.
 // ─────────────────────────────────────────────────────────────────────────────
-import { createPublicClient, http, encodeAbiParameters } from "viem";
-import { litvm } from "@/lib/chain";
-
 async function readMakeCommitment(name: string, registrant: `0x${string}`, secret: `0x${string}`): Promise<`0x${string}`> {
   try {
     const client = createPublicClient({ chain: litvm, transport: http() });
