@@ -27,6 +27,13 @@ export const ADDR = {
   ZEC: "0x0177E73214265D1d6f29a273155803Af5Bf47cFa",
   XMR: "0x05466944d61662225ad19916725975230bb5b2B7",
   ORVX: "0x7216EAb89cDbb52D3D8A0e2F305F9Afb5cE122a3",
+  // Yield Farming (MasterChef-style) — new deployment
+  farm: "0x4bfE047FF04D960999f51AeC644200c20Ad55AbB",
+  // ORVEX Name Service (.orvx domains)
+  domainController: "0x9d52A56b28259992Cb1044ae24AD80F4c6D8f253",
+  baseRegistrar: "0x14eBDFe5b92E1e4ddC0059627b729DcB2E361594",
+  publicResolver: "0x6BaBa44Fa03E79f1C849372079a33F8182D5bddA",
+  registry: "0xc7291D28450c1c3f25F5DfB1Bc1058fde35A9524",
 } as const;
 
 export const explorerTx = (hash: string) =>
