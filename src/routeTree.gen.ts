@@ -15,6 +15,7 @@ import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as PoolsRouteImport } from './routes/pools'
 import { Route as LiquidityRouteImport } from './routes/liquidity'
 import { Route as FaucetRouteImport } from './routes/faucet'
+import { Route as FarmRouteImport } from './routes/farm'
 import { Route as DocsRouteImport } from './routes/docs'
 import { Route as BrandRouteImport } from './routes/brand'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
@@ -51,6 +52,11 @@ const FaucetRoute = FaucetRouteImport.update({
   path: '/faucet',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FarmRoute = FarmRouteImport.update({
+  id: '/farm',
+  path: '/farm',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DocsRoute = DocsRouteImport.update({
   id: '/docs',
   path: '/docs',
@@ -83,6 +89,7 @@ export interface FileRoutesByFullPath {
   '/analytics': typeof AnalyticsRoute
   '/brand': typeof BrandRoute
   '/docs': typeof DocsRoute
+  '/farm': typeof FarmRoute
   '/faucet': typeof FaucetRoute
   '/liquidity': typeof LiquidityRoute
   '/pools': typeof PoolsRoute
@@ -96,6 +103,7 @@ export interface FileRoutesByTo {
   '/analytics': typeof AnalyticsRoute
   '/brand': typeof BrandRoute
   '/docs': typeof DocsRoute
+  '/farm': typeof FarmRoute
   '/faucet': typeof FaucetRoute
   '/liquidity': typeof LiquidityRoute
   '/pools': typeof PoolsRoute
@@ -110,6 +118,7 @@ export interface FileRoutesById {
   '/analytics': typeof AnalyticsRoute
   '/brand': typeof BrandRoute
   '/docs': typeof DocsRoute
+  '/farm': typeof FarmRoute
   '/faucet': typeof FaucetRoute
   '/liquidity': typeof LiquidityRoute
   '/pools': typeof PoolsRoute
@@ -125,6 +134,7 @@ export interface FileRouteTypes {
     | '/analytics'
     | '/brand'
     | '/docs'
+    | '/farm'
     | '/faucet'
     | '/liquidity'
     | '/pools'
@@ -138,6 +148,7 @@ export interface FileRouteTypes {
     | '/analytics'
     | '/brand'
     | '/docs'
+    | '/farm'
     | '/faucet'
     | '/liquidity'
     | '/pools'
@@ -151,6 +162,7 @@ export interface FileRouteTypes {
     | '/analytics'
     | '/brand'
     | '/docs'
+    | '/farm'
     | '/faucet'
     | '/liquidity'
     | '/pools'
@@ -165,6 +177,7 @@ export interface RootRouteChildren {
   AnalyticsRoute: typeof AnalyticsRoute
   BrandRoute: typeof BrandRoute
   DocsRoute: typeof DocsRoute
+  FarmRoute: typeof FarmRoute
   FaucetRoute: typeof FaucetRoute
   LiquidityRoute: typeof LiquidityRoute
   PoolsRoute: typeof PoolsRoute
@@ -217,6 +230,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FaucetRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/farm': {
+      id: '/farm'
+      path: '/farm'
+      fullPath: '/farm'
+      preLoaderRoute: typeof FarmRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/docs': {
       id: '/docs'
       path: '/docs'
@@ -261,6 +281,7 @@ const rootRouteChildren: RootRouteChildren = {
   AnalyticsRoute: AnalyticsRoute,
   BrandRoute: BrandRoute,
   DocsRoute: DocsRoute,
+  FarmRoute: FarmRoute,
   FaucetRoute: FaucetRoute,
   LiquidityRoute: LiquidityRoute,
   PoolsRoute: PoolsRoute,
