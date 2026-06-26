@@ -12,4 +12,13 @@ export default defineConfig({
   tanstackStart: {
     server: { entry: "server" },
   },
+  vite: {
+    resolve: {
+      alias: {
+        // Polyfill Node's `events` for browser bundles (used by @walletconnect/heartbeat
+        // transitively pulled in via wagmi/connectors).
+        events: "events",
+      },
+    },
+  },
 });
