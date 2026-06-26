@@ -2,6 +2,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useAccount, useBalance, useReadContract, useReadContracts } from "wagmi";
 import { formatUnits } from "viem";
+import { ArrowLeftRight, Droplets, Sprout, Globe2, BarChart3, Wallet, ShieldCheck, Zap, Layers, Sparkles } from "lucide-react";
 import heroNeon from "@/assets/orvex-hero-neon.jpg";
 import { ADDR } from "@/lib/chain";
 import { factoryAbi } from "@/lib/abis/factory";
@@ -341,7 +342,158 @@ function Landing() {
         </div>
       </section>
 
+      {/* PRODUCT SUITE */}
+      <section className="relative max-w-7xl mx-auto px-4 sm:px-6 py-20">
+        <div className="text-center max-w-2xl mx-auto mb-12">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-strong border-gold text-[10px] tracking-[0.3em] uppercase text-gradient-gold font-bold">
+            <Sparkles className="h-3 w-3" /> The ORVEX Suite
+          </div>
+          <h2 className="mt-5 text-3xl sm:text-5xl font-extrabold tracking-tight">
+            One protocol. <span className="text-gradient-luxe">Everything DeFi.</span>
+          </h2>
+          <p className="mt-4 text-muted-foreground">
+            A fully composable on-chain stack built on LitVM LiteForge — trade, earn, build, and
+            claim your identity in a single, premium experience.
+          </p>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <ProductCard icon={ArrowLeftRight} to="/swap" title="Atelier Swap" desc="Best-execution routing via wzkLTC across every pool. Sub-second quotes, zero compromise." accent="violet" />
+          <ProductCard icon={Droplets} to="/liquidity" title="Liquidity Vaults" desc="Provide depth, mint LP receipts, and earn protocol fees from every swap, on-chain." accent="cyan" />
+          <ProductCard icon={Sprout} to="/farm" title="Yield Farming" desc="Stake LP tokens into reward pools and harvest ORVX emissions block by block." accent="gold" />
+          <ProductCard icon={Globe2} to="/domains" title=".orvx Domains" desc="Mint your Web3 identity. Commit-reveal registrar with reverse resolution baked in." accent="violet" />
+          <ProductCard icon={BarChart3} to="/analytics" title="Live Analytics" desc="Real-time TVL, volume, swaps and wallet activity — aggregated straight from chain logs." accent="cyan" />
+          <ProductCard icon={Wallet} to="/portfolio" title="Portfolio Desk" desc="Track holdings, LP positions, farms and history with elegant, gallery-grade visuals." accent="gold" />
+        </div>
+      </section>
+
+      {/* SUPPORTED TOKENS */}
+      <section className="relative max-w-7xl mx-auto px-4 sm:px-6 pb-20">
+        <div className="rounded-[2rem] glass-strong border-gold shadow-elegant p-8 sm:p-12 overflow-hidden relative">
+          <div className="absolute -top-24 -left-24 w-72 h-72 rounded-full blur-3xl opacity-30"
+            style={{ background: "radial-gradient(closest-side, oklch(0.84 0.16 85 / 0.6), transparent 70%)" }} />
+          <div className="absolute -bottom-24 -right-24 w-72 h-72 rounded-full blur-3xl opacity-30"
+            style={{ background: "radial-gradient(closest-side, oklch(0.65 0.27 295 / 0.6), transparent 70%)" }} />
+          <div className="relative grid lg:grid-cols-12 gap-10 items-center">
+            <div className="lg:col-span-5">
+              <div className="text-[10px] tracking-[0.3em] uppercase text-gradient-gold font-bold mb-3">Supported Assets</div>
+              <h2 className="text-3xl sm:text-4xl font-extrabold tracking-tight">
+                Trade the assets that <span className="text-gradient-luxe">define crypto.</span>
+              </h2>
+              <p className="mt-4 text-muted-foreground">
+                Every token bridged to LitVM is first-class on ORVEX — deep liquidity, transparent
+                pricing, and instant settlement on every market.
+              </p>
+              <div className="mt-6 flex flex-wrap gap-2">
+                <span className="px-3 py-1 rounded-full glass border-gold text-xs font-semibold">UniswapV2 forks</span>
+                <span className="px-3 py-1 rounded-full glass border-gold text-xs font-semibold">0.3% fee</span>
+                <span className="px-3 py-1 rounded-full glass border-gold text-xs font-semibold">EVM-compatible</span>
+              </div>
+            </div>
+            <div className="lg:col-span-7">
+              <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
+                {TOKENS.map((t) => (
+                  <div key={t.symbol} className="rounded-2xl p-4 glass border-gold card-hover text-center group">
+                    <div className="relative inline-flex">
+                      <span aria-hidden className="absolute inset-0 rounded-full blur-md opacity-50 group-hover:opacity-90 transition"
+                        style={{ background: "radial-gradient(closest-side, oklch(0.65 0.27 295 / 0.7), transparent 70%)" }} />
+                      <img src={t.logo} alt={`${t.symbol} logo`} className="relative h-12 w-12 rounded-full ring-2 ring-primary/40" />
+                    </div>
+                    <div className="mt-3 text-sm font-bold">{t.symbol}</div>
+                    <div className="text-[10px] text-muted-foreground truncate">{t.name}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* WHY ORVEX */}
+      <section className="relative max-w-7xl mx-auto px-4 sm:px-6 pb-24">
+        <div className="text-center max-w-2xl mx-auto mb-12">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full glass-strong border-gold text-[10px] tracking-[0.3em] uppercase text-gradient-gold font-bold">
+            <ShieldCheck className="h-3 w-3" /> Built for Conviction
+          </div>
+          <h2 className="mt-5 text-3xl sm:text-5xl font-extrabold tracking-tight">
+            A protocol forged for <span className="text-gradient-luxe">serious capital.</span>
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <PillarCard icon={ShieldCheck} title="Non-custodial by design" desc="No middlemen, no off-chain ledgers. Every trade, mint, and claim is verified on LitVM in real time." />
+          <PillarCard icon={Zap} title="LitVM-grade performance" desc="Sub-second confirmation, negligible fees, and zkLTC settlement keep the experience effortless." />
+          <PillarCard icon={Layers} title="Composable stack" desc="Swap, LP, farm, and resolve identities — all surfaces share the same audited primitives." />
+        </div>
+
+        {/* Final CTA */}
+        <div className="mt-16 relative rounded-[2rem] overflow-hidden glass-strong border-gold shadow-elegant animated-border">
+          <div className="absolute inset-0 grid-bg opacity-[0.08]" />
+          <div className="relative p-10 sm:p-14 text-center">
+            <BrandMark size="xl" className="mx-auto justify-center" />
+            <h3 className="mt-6 text-3xl sm:text-4xl font-extrabold tracking-tight">
+              Step inside the <span className="text-gradient-luxe">ORVEX atelier.</span>
+            </h3>
+            <p className="mt-3 text-muted-foreground max-w-xl mx-auto">
+              Connect once. Trade everywhere. Claim your .orvx identity and start compounding on the
+              most refined DeFi surface on LitVM.
+            </p>
+            <div className="mt-7 flex flex-wrap justify-center gap-3">
+              <button
+                onClick={() => { if (isConnected) navigate({ to: "/swap" }); else setWalletOpen(true); }}
+                className="px-7 py-3 rounded-xl bg-gradient-luxe text-primary-foreground font-bold shadow-neon hover:-translate-y-0.5 transition-all"
+              >
+                {isConnected ? "Launch Trading Desk →" : "Connect & Begin"}
+              </button>
+              <Link to="/domains" className="px-7 py-3 rounded-xl glass border-gold font-semibold hover:bg-surface-2 transition">
+                Mint your .orvx
+              </Link>
+              <Link to="/docs" className="px-7 py-3 rounded-xl text-sm text-muted-foreground hover:text-foreground transition">
+                Read the docs →
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <WalletModal open={walletOpen} onClose={() => { setWalletOpen(false); if (isConnected) navigate({ to: "/swap" }); }} />
+    </div>
+  );
+}
+
+function ProductCard({ icon: Icon, to, title, desc, accent }: { icon: any; to: string; title: string; desc: string; accent: "violet" | "cyan" | "gold" }) {
+  const glow = accent === "violet"
+    ? "oklch(0.65 0.27 295 / 0.5)"
+    : accent === "cyan"
+    ? "oklch(0.78 0.18 220 / 0.5)"
+    : "oklch(0.84 0.16 85 / 0.5)";
+  return (
+    <Link
+      to={to as any}
+      className="group relative rounded-2xl p-6 glass-strong border-gold card-hover overflow-hidden block"
+    >
+      <span aria-hidden className="absolute -top-16 -right-16 w-48 h-48 rounded-full blur-3xl opacity-50 group-hover:opacity-90 transition"
+        style={{ background: `radial-gradient(closest-side, ${glow}, transparent 70%)` }} />
+      <div className="relative">
+        <div className="h-12 w-12 rounded-xl bg-gradient-luxe inline-flex items-center justify-center shadow-neon">
+          <Icon className="h-6 w-6 text-primary-foreground" />
+        </div>
+        <h3 className="mt-5 text-xl font-bold">{title}</h3>
+        <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{desc}</p>
+        <div className="mt-5 text-xs font-bold tracking-[0.2em] uppercase text-gradient-gold inline-flex items-center gap-1 group-hover:gap-2 transition-all">
+          Open →
+        </div>
+      </div>
+    </Link>
+  );
+}
+
+function PillarCard({ icon: Icon, title, desc }: { icon: any; title: string; desc: string }) {
+  return (
+    <div className="rounded-2xl p-6 glass border-gold card-hover">
+      <div className="h-11 w-11 rounded-xl glass-strong border-gold inline-flex items-center justify-center">
+        <Icon className="h-5 w-5 text-gradient-luxe" style={{ color: "oklch(0.84 0.16 85)" }} />
+      </div>
+      <h3 className="mt-4 text-lg font-bold">{title}</h3>
+      <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{desc}</p>
     </div>
   );
 }
